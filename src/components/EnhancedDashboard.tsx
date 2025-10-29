@@ -257,6 +257,27 @@ export default function EnhancedDashboard({ onAddContact, onFilterByStatus, onVi
           <div className="h-10 w-48 skeleton rounded-lg"></div>
           <div className="h-10 w-36 skeleton rounded-lg"></div>
         </div>
+
+        <div className="bg-slate-800 p-6 rounded-2xl border-2 border-cyan-500/40">
+          <div className="flex items-center gap-2 mb-4">
+            <div className="h-6 w-40 skeleton rounded"></div>
+          </div>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4 bg-slate-900/50 p-4 rounded-xl">
+            {[...Array(4)].map((_, i) => (
+              <div key={i} className="space-y-2">
+                <div className="h-4 w-20 skeleton rounded"></div>
+                <div className="h-8 w-16 skeleton rounded"></div>
+                <div className="h-3 w-24 skeleton rounded"></div>
+              </div>
+            ))}
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+            {[...Array(4)].map((_, i) => (
+              <div key={i} className="h-48 skeleton rounded-xl"></div>
+            ))}
+          </div>
+        </div>
+
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           {[...Array(4)].map((_, i) => (
             <div key={i} className="h-32 skeleton rounded-xl"></div>
@@ -317,74 +338,85 @@ export default function EnhancedDashboard({ onAddContact, onFilterByStatus, onVi
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          <button
-            onClick={() => onFilterByStatus('Lead')}
-            className="relative bg-slate-900 rounded-xl p-5 border-2 border-cyan-400/60 shadow-lg hover:shadow-cyan-500/40 hover:border-cyan-400 text-left transition-all hover:scale-105 hover:-translate-y-1 group"
-          >
-            <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity">
-              <ArrowRight className="text-cyan-400" size={18} />
-            </div>
-            <div className="mb-3">
-              <p className="text-xs font-bold text-cyan-300 uppercase tracking-wide mb-1">Stage 1</p>
-              <p className="text-sm font-medium text-cyan-300 mb-2">New Leads</p>
-            </div>
-            <p className="text-5xl font-bold bg-gradient-to-r from-cyan-400 to-emerald-400 bg-clip-text text-transparent mb-2">{stats.newLeads}</p>
-            <div className="flex items-center justify-between text-xs text-cyan-400">
-              <span>{stats.total > 0 ? Math.round((stats.newLeads / stats.total) * 100) : 0}% of total</span>
-            </div>
-          </button>
+        <div className="relative">
+          <div className="hidden md:flex absolute inset-0 items-center justify-between px-[12.5%] pointer-events-none">
+            <ArrowRight className="text-cyan-400/40 animate-pulse" size={32} style={{ animationDuration: '2s' }} />
+            <ArrowRight className="text-blue-400/40 animate-pulse" size={32} style={{ animationDuration: '2s', animationDelay: '0.3s' }} />
+            <ArrowRight className="text-purple-400/40 animate-pulse" size={32} style={{ animationDuration: '2s', animationDelay: '0.6s' }} />
+          </div>
 
-          <button
-            onClick={() => onFilterByStatus('Contacted')}
-            className="relative bg-slate-900 rounded-xl p-5 border-2 border-blue-400/60 shadow-lg hover:shadow-blue-500/40 hover:border-blue-400 text-left transition-all hover:scale-105 hover:-translate-y-1 group"
-          >
-            <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity">
-              <ArrowRight className="text-blue-400" size={18} />
-            </div>
-            <div className="mb-3">
-              <p className="text-xs font-bold text-blue-300 uppercase tracking-wide mb-1">Stage 2</p>
-              <p className="text-sm font-medium text-cyan-300 mb-2">Contacted</p>
-            </div>
-            <p className="text-5xl font-bold bg-gradient-to-r from-blue-400 to-cyan-400 bg-clip-text text-transparent mb-2">{stats.contacted}</p>
-            <div className="flex items-center justify-between text-xs text-cyan-400">
-              <span>{stats.total > 0 ? Math.round((stats.contacted / stats.total) * 100) : 0}% of total</span>
-            </div>
-          </button>
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4 relative">
+            <button
+              onClick={() => onFilterByStatus('Lead')}
+              className="relative bg-slate-900 rounded-xl p-5 border-2 border-cyan-400/60 shadow-lg hover:shadow-cyan-500/40 hover:border-cyan-400 text-left transition-all hover:scale-105 hover:-translate-y-1 group animate-fadeInUp"
+            >
+              <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity">
+                <ArrowRight className="text-cyan-400" size={18} />
+              </div>
+              <div className="mb-3">
+                <p className="text-xs font-bold text-cyan-300 uppercase tracking-wide mb-1">Stage 1</p>
+                <p className="text-sm font-medium text-cyan-300 mb-2">New Leads</p>
+              </div>
+              <p className="text-5xl font-bold bg-gradient-to-r from-cyan-400 to-emerald-400 bg-clip-text text-transparent mb-2">{stats.newLeads}</p>
+              <div className="flex items-center justify-between text-xs text-cyan-400">
+                <span>{stats.total > 0 ? Math.round((stats.newLeads / stats.total) * 100) : 0}% of total</span>
+              </div>
+            </button>
 
-          <button
-            onClick={() => onFilterByStatus('Proposal')}
-            className="relative bg-slate-900 rounded-xl p-5 border-2 border-purple-400/60 shadow-lg hover:shadow-purple-500/40 hover:border-purple-400 text-left transition-all hover:scale-105 hover:-translate-y-1 group"
-          >
-            <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity">
-              <ArrowRight className="text-purple-400" size={18} />
-            </div>
-            <div className="mb-3">
-              <p className="text-xs font-bold text-purple-300 uppercase tracking-wide mb-1">Stage 3</p>
-              <p className="text-sm font-medium text-cyan-300 mb-2">Proposals</p>
-            </div>
-            <p className="text-5xl font-bold bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent mb-2">{stats.proposals}</p>
-            <div className="flex items-center justify-between text-xs text-cyan-400">
-              <span>{stats.total > 0 ? Math.round((stats.proposals / stats.total) * 100) : 0}% of total</span>
-            </div>
-          </button>
+            <button
+              onClick={() => onFilterByStatus('Contacted')}
+              className="relative bg-slate-900 rounded-xl p-5 border-2 border-blue-400/60 shadow-lg hover:shadow-blue-500/40 hover:border-blue-400 text-left transition-all hover:scale-105 hover:-translate-y-1 group animate-fadeInUp"
+              style={{ animationDelay: '0.1s' }}
+            >
+              <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity">
+                <ArrowRight className="text-blue-400" size={18} />
+              </div>
+              <div className="mb-3">
+                <p className="text-xs font-bold text-blue-300 uppercase tracking-wide mb-1">Stage 2</p>
+                <p className="text-sm font-medium text-cyan-300 mb-2">Contacted</p>
+              </div>
+              <p className="text-5xl font-bold bg-gradient-to-r from-blue-400 to-cyan-400 bg-clip-text text-transparent mb-2">{stats.contacted}</p>
+              <div className="flex items-center justify-between text-xs text-cyan-400">
+                <span>{stats.total > 0 ? Math.round((stats.contacted / stats.total) * 100) : 0}% of total</span>
+              </div>
+            </button>
 
-          <button
-            onClick={() => onFilterByStatus('Closed Won')}
-            className="relative bg-slate-900 rounded-xl p-5 border-2 border-green-400/60 shadow-lg hover:shadow-green-500/40 hover:border-green-400 text-left transition-all hover:scale-105 hover:-translate-y-1 group"
-          >
-            <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity">
-              <CheckCircle className="text-green-400" size={18} />
-            </div>
-            <div className="mb-3">
-              <p className="text-xs font-bold text-green-300 uppercase tracking-wide mb-1">Stage 4</p>
-              <p className="text-sm font-medium text-cyan-300 mb-2">Closed Won</p>
-            </div>
-            <p className="text-5xl font-bold bg-gradient-to-r from-green-400 to-emerald-400 bg-clip-text text-transparent mb-2">{stats.closedWon}</p>
-            <div className="flex items-center justify-between text-xs text-cyan-400">
-              <span>{stats.total > 0 ? Math.round((stats.closedWon / stats.total) * 100) : 0}% of total</span>
-            </div>
-          </button>
+            <button
+              onClick={() => onFilterByStatus('Proposal')}
+              className="relative bg-slate-900 rounded-xl p-5 border-2 border-purple-400/60 shadow-lg hover:shadow-purple-500/40 hover:border-purple-400 text-left transition-all hover:scale-105 hover:-translate-y-1 group animate-fadeInUp"
+              style={{ animationDelay: '0.2s' }}
+            >
+              <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity">
+                <ArrowRight className="text-purple-400" size={18} />
+              </div>
+              <div className="mb-3">
+                <p className="text-xs font-bold text-purple-300 uppercase tracking-wide mb-1">Stage 3</p>
+                <p className="text-sm font-medium text-cyan-300 mb-2">Proposals</p>
+              </div>
+              <p className="text-5xl font-bold bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent mb-2">{stats.proposals}</p>
+              <div className="flex items-center justify-between text-xs text-cyan-400">
+                <span>{stats.total > 0 ? Math.round((stats.proposals / stats.total) * 100) : 0}% of total</span>
+              </div>
+            </button>
+
+            <button
+              onClick={() => onFilterByStatus('Closed Won')}
+              className="relative bg-slate-900 rounded-xl p-5 border-2 border-green-400/60 shadow-lg hover:shadow-green-500/40 hover:border-green-400 text-left transition-all hover:scale-105 hover:-translate-y-1 group animate-fadeInUp"
+              style={{ animationDelay: '0.3s' }}
+            >
+              <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity">
+                <CheckCircle className="text-green-400" size={18} />
+              </div>
+              <div className="mb-3">
+                <p className="text-xs font-bold text-green-300 uppercase tracking-wide mb-1">Stage 4</p>
+                <p className="text-sm font-medium text-cyan-300 mb-2">Closed Won</p>
+              </div>
+              <p className="text-5xl font-bold bg-gradient-to-r from-green-400 to-emerald-400 bg-clip-text text-transparent mb-2">{stats.closedWon}</p>
+              <div className="flex items-center justify-between text-xs text-cyan-400">
+                <span>{stats.total > 0 ? Math.round((stats.closedWon / stats.total) * 100) : 0}% of total</span>
+              </div>
+            </button>
+          </div>
         </div>
       </div>
 
