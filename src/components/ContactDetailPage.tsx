@@ -135,6 +135,8 @@ export default function ContactDetailPage({
       .update({ status: newStatus, updated_at: new Date().toISOString() })
       .eq('id', contact.id);
 
+    console.log('Status update result:', { error, oldStatus, newStatus });
+
     if (!error) {
       await supabase.from('contact_activities').insert({
         contact_id: contact.id,
@@ -143,12 +145,13 @@ export default function ContactDetailPage({
       });
 
       loadActivities();
-      onUpdate();
+      // Don't call onUpdate() here as it refreshes parent with stale data
 
       // Show success notification
       setStatusSaved(true);
       setTimeout(() => setStatusSaved(false), 2000);
     } else {
+      console.error('Error updating status:', error);
       // Revert on error
       setContact(prev => ({ ...prev, status: oldStatus }));
     }
