@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Search, Filter, ChevronLeft, ChevronRight, X, Calendar, FileText, CheckSquare } from 'lucide-react';
+import { Search, Filter, ChevronLeft, ChevronRight, X, Calendar, FileText, CheckSquare, ArrowUpDown } from 'lucide-react';
 import { supabase, Contact, Task } from '../lib/supabase';
 
 interface ContactsPageProps {
@@ -20,6 +20,8 @@ export default function ContactsPage({ onViewContact, initialStatusFilter = 'All
   const [hasNotes, setHasNotes] = useState(false);
   const [hasOverdueTasks, setHasOverdueTasks] = useState(false);
   const [tasksData, setTasksData] = useState<Task[]>([]);
+  const [sortBy, setSortBy] = useState<'name' | 'company' | 'date' | 'status'>('date');
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
   const itemsPerPage = 10;
 
   useEffect(() => {
@@ -32,7 +34,7 @@ export default function ContactsPage({ onViewContact, initialStatusFilter = 'All
 
   useEffect(() => {
     filterContacts();
-  }, [contacts, searchTerm, statusFilter, dateFrom, dateTo, hasNotes, hasOverdueTasks, tasksData]);
+  }, [contacts, searchTerm, statusFilter, dateFrom, dateTo, hasNotes, hasOverdueTasks, tasksData, sortBy, sortOrder]);
 
   const loadContacts = async () => {
     setLoading(true);
@@ -92,6 +94,27 @@ export default function ContactsPage({ onViewContact, initialStatusFilter = 'All
         .map(task => task.contact_id);
       filtered = filtered.filter(contact => contactsWithOverdue.includes(contact.id));
     }
+
+    filtered.sort((a, b) => {
+      let comparison = 0;
+
+      switch (sortBy) {
+        case 'name':
+          comparison = a.full_name.localeCompare(b.full_name);
+          break;
+        case 'company':
+          comparison = a.company.localeCompare(b.company);
+          break;
+        case 'date':
+          comparison = new Date(a.created_at).getTime() - new Date(b.created_at).getTime();
+          break;
+        case 'status':
+          comparison = a.status.localeCompare(b.status);
+          break;
+      }
+
+      return sortOrder === 'asc' ? comparison : -comparison;
+    });
 
     setFilteredContacts(filtered);
     setCurrentPage(1);
@@ -206,6 +229,29 @@ export default function ContactsPage({ onViewContact, initialStatusFilter = 'All
                 {getActiveFilterCount()}
               </span>
             )}
+          </button>
+        </div>
+
+        <div className="flex items-center gap-3 mb-4">
+          <div className="flex items-center gap-2 text-cyan-300">
+            <ArrowUpDown size={18} />
+            <span className="text-sm font-medium">Sort by:</span>
+          </div>
+          <select
+            value={sortBy}
+            onChange={(e) => setSortBy(e.target.value as typeof sortBy)}
+            className="px-4 py-2 bg-slate-900 border-2 border-cyan-500/40 rounded-lg text-cyan-100 text-sm focus:ring-2 focus:ring-cyan-500"
+          >
+            <option value="date">Date Added</option>
+            <option value="name">Name</option>
+            <option value="company">Company</option>
+            <option value="status">Status</option>
+          </select>
+          <button
+            onClick={() => setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc')}
+            className="px-4 py-2 bg-slate-900 border-2 border-cyan-500/40 rounded-lg text-cyan-100 text-sm hover:bg-slate-700 transition-all"
+          >
+            {sortOrder === 'asc' ? '↑ Ascending' : '↓ Descending'}
           </button>
         </div>
 

@@ -3,6 +3,7 @@ import { ArrowLeft, CreditCard as Edit2, Trash2, Mail, Phone, Building2, User, F
 import { supabase, Contact, ContactActivity, Task, Deal, File as FileType } from '../lib/supabase';
 import FilesTab from './FilesTab';
 import EmailComposeModal from './EmailComposeModal';
+import QuickActionsBar from './QuickActionsBar';
 
 interface ContactDetailPageProps {
   contact: Contact;
@@ -421,6 +422,13 @@ export default function ContactDetailPage({
         </div>
 
         <div className="p-8">
+          <QuickActionsBar
+            onSendEmail={() => setShowEmailModal(true)}
+            onAddActivity={() => setShowActivityModal(true)}
+            onAddTask={() => setShowTaskModal(true)}
+            contactPhone={contact.phone}
+          />
+
           {activeTab === 'overview' && (
             <div className="space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
