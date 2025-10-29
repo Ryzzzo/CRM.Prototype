@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Users, TrendingUp, FileText, CheckCircle, Plus, Sparkles, Calendar, Activity, DollarSign } from 'lucide-react';
+import { Users, TrendingUp, FileText, CheckCircle, Plus, Sparkles, Calendar, Activity, DollarSign, ArrowRight, Target } from 'lucide-react';
 import { supabase, Contact, ContactActivity, Task } from '../lib/supabase';
 import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend, ArcElement, BarElement } from 'chart.js';
 import { Line, Pie, Bar } from 'react-chartjs-2';
@@ -18,8 +18,10 @@ interface Stats {
   contacted: number;
   proposals: number;
   closedWon: number;
+  closedLost: number;
   tasksThisWeek: number;
   recentActivity: number;
+  activeLeads: number;
 }
 
 export default function EnhancedDashboard({ onAddContact, onFilterByStatus, onViewContact }: DashboardProps) {
@@ -29,8 +31,10 @@ export default function EnhancedDashboard({ onAddContact, onFilterByStatus, onVi
     contacted: 0,
     proposals: 0,
     closedWon: 0,
+    closedLost: 0,
     tasksThisWeek: 0,
     recentActivity: 0,
+    activeLeads: 0,
   });
   const [recentActivities, setRecentActivities] = useState<(ContactActivity & { contact?: Contact })[]>([]);
   const [loading, setLoading] = useState(true);
@@ -47,14 +51,23 @@ export default function EnhancedDashboard({ onAddContact, onFilterByStatus, onVi
     const { data: contacts } = await supabase.from('contacts').select('*, created_at');
 
     if (contacts) {
+      const newLeads = contacts.filter(c => c.status === 'Lead').length;
+      const contacted = contacts.filter(c => c.status === 'Contacted').length;
+      const proposals = contacts.filter(c => c.status === 'Proposal').length;
+      const closedWon = contacts.filter(c => c.status === 'Closed Won').length;
+      const closedLost = contacts.filter(c => c.status === 'Closed Lost').length;
+      const activeLeads = newLeads + contacted + proposals;
+
       const newStats = {
         total: contacts.length,
-        newLeads: contacts.filter(c => c.status === 'Lead').length,
-        contacted: contacts.filter(c => c.status === 'Contacted').length,
-        proposals: contacts.filter(c => c.status === 'Proposal').length,
-        closedWon: contacts.filter(c => c.status === 'Closed Won').length,
+        newLeads,
+        contacted,
+        proposals,
+        closedWon,
+        closedLost,
         tasksThisWeek: 0,
         recentActivity: 0,
+        activeLeads,
       };
 
       const last30Days = Array.from({ length: 30 }, (_, i) => {
@@ -275,6 +288,106 @@ export default function EnhancedDashboard({ onAddContact, onFilterByStatus, onVi
         </button>
       </div>
 
+      <div className="bg-gradient-to-br from-slate-800 via-teal-900 to-slate-800 p-6 rounded-2xl border-2 border-cyan-500/40 shadow-2xl shadow-cyan-500/20">
+        <div className="flex items-center gap-2 mb-4">
+          <Target className="text-cyan-400" size={24} />
+          <h2 className="text-2xl font-bold text-cyan-100">Sales Pipeline</h2>
+        </div>
+
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4 bg-slate-900/50 p-4 rounded-xl">
+          <div className="text-center md:text-left">
+            <p className="text-xs text-cyan-400 font-medium uppercase tracking-wide mb-1">Total Active</p>
+            <p className="text-2xl font-bold text-white">{stats.activeLeads}</p>
+            <p className="text-xs text-cyan-300 mt-1">In Pipeline</p>
+          </div>
+          <div className="text-center md:text-left">
+            <p className="text-xs text-cyan-400 font-medium uppercase tracking-wide mb-1">Conversion</p>
+            <p className="text-2xl font-bold text-green-400">{stats.total > 0 ? Math.round((stats.closedWon / stats.total) * 100) : 0}%</p>
+            <p className="text-xs text-cyan-300 mt-1">Win Rate</p>
+          </div>
+          <div className="text-center md:text-left">
+            <p className="text-xs text-cyan-400 font-medium uppercase tracking-wide mb-1">Won</p>
+            <p className="text-2xl font-bold text-emerald-400">{stats.closedWon}</p>
+            <p className="text-xs text-cyan-300 mt-1">Closed</p>
+          </div>
+          <div className="text-center md:text-left">
+            <p className="text-xs text-cyan-400 font-medium uppercase tracking-wide mb-1">Lost</p>
+            <p className="text-2xl font-bold text-red-400">{stats.closedLost}</p>
+            <p className="text-xs text-cyan-300 mt-1">Closed</p>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <button
+            onClick={() => onFilterByStatus('Lead')}
+            className="relative bg-slate-900 rounded-xl p-5 border-2 border-cyan-400/60 shadow-lg hover:shadow-cyan-500/40 hover:border-cyan-400 text-left transition-all hover:scale-105 hover:-translate-y-1 group"
+          >
+            <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity">
+              <ArrowRight className="text-cyan-400" size={18} />
+            </div>
+            <div className="mb-3">
+              <p className="text-xs font-bold text-cyan-300 uppercase tracking-wide mb-1">Stage 1</p>
+              <p className="text-sm font-medium text-cyan-300 mb-2">New Leads</p>
+            </div>
+            <p className="text-5xl font-bold bg-gradient-to-r from-cyan-400 to-emerald-400 bg-clip-text text-transparent mb-2">{stats.newLeads}</p>
+            <div className="flex items-center justify-between text-xs text-cyan-400">
+              <span>{stats.total > 0 ? Math.round((stats.newLeads / stats.total) * 100) : 0}% of total</span>
+            </div>
+          </button>
+
+          <button
+            onClick={() => onFilterByStatus('Contacted')}
+            className="relative bg-slate-900 rounded-xl p-5 border-2 border-blue-400/60 shadow-lg hover:shadow-blue-500/40 hover:border-blue-400 text-left transition-all hover:scale-105 hover:-translate-y-1 group"
+          >
+            <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity">
+              <ArrowRight className="text-blue-400" size={18} />
+            </div>
+            <div className="mb-3">
+              <p className="text-xs font-bold text-blue-300 uppercase tracking-wide mb-1">Stage 2</p>
+              <p className="text-sm font-medium text-cyan-300 mb-2">Contacted</p>
+            </div>
+            <p className="text-5xl font-bold bg-gradient-to-r from-blue-400 to-cyan-400 bg-clip-text text-transparent mb-2">{stats.contacted}</p>
+            <div className="flex items-center justify-between text-xs text-cyan-400">
+              <span>{stats.total > 0 ? Math.round((stats.contacted / stats.total) * 100) : 0}% of total</span>
+            </div>
+          </button>
+
+          <button
+            onClick={() => onFilterByStatus('Proposal')}
+            className="relative bg-slate-900 rounded-xl p-5 border-2 border-purple-400/60 shadow-lg hover:shadow-purple-500/40 hover:border-purple-400 text-left transition-all hover:scale-105 hover:-translate-y-1 group"
+          >
+            <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity">
+              <ArrowRight className="text-purple-400" size={18} />
+            </div>
+            <div className="mb-3">
+              <p className="text-xs font-bold text-purple-300 uppercase tracking-wide mb-1">Stage 3</p>
+              <p className="text-sm font-medium text-cyan-300 mb-2">Proposals</p>
+            </div>
+            <p className="text-5xl font-bold bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent mb-2">{stats.proposals}</p>
+            <div className="flex items-center justify-between text-xs text-cyan-400">
+              <span>{stats.total > 0 ? Math.round((stats.proposals / stats.total) * 100) : 0}% of total</span>
+            </div>
+          </button>
+
+          <button
+            onClick={() => onFilterByStatus('Closed Won')}
+            className="relative bg-slate-900 rounded-xl p-5 border-2 border-green-400/60 shadow-lg hover:shadow-green-500/40 hover:border-green-400 text-left transition-all hover:scale-105 hover:-translate-y-1 group"
+          >
+            <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity">
+              <CheckCircle className="text-green-400" size={18} />
+            </div>
+            <div className="mb-3">
+              <p className="text-xs font-bold text-green-300 uppercase tracking-wide mb-1">Stage 4</p>
+              <p className="text-sm font-medium text-cyan-300 mb-2">Closed Won</p>
+            </div>
+            <p className="text-5xl font-bold bg-gradient-to-r from-green-400 to-emerald-400 bg-clip-text text-transparent mb-2">{stats.closedWon}</p>
+            <div className="flex items-center justify-between text-xs text-cyan-400">
+              <span>{stats.total > 0 ? Math.round((stats.closedWon / stats.total) * 100) : 0}% of total</span>
+            </div>
+          </button>
+        </div>
+      </div>
+
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <div className="gradient-teal-cyan p-6 rounded-xl shadow-lg shadow-cyan-500/30 card-hover border border-cyan-400/30">
           <div className="flex items-center justify-between">
@@ -295,7 +408,8 @@ export default function EnhancedDashboard({ onAddContact, onFilterByStatus, onVi
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm text-cyan-300 font-medium">Active Leads</p>
-              <p className="text-4xl font-bold text-cyan-100 mt-2">{stats.newLeads}</p>
+              <p className="text-4xl font-bold text-cyan-100 mt-2">{stats.activeLeads}</p>
+              <p className="text-xs text-cyan-400 mt-1">In Pipeline</p>
             </div>
             <div className="bg-cyan-400 bg-opacity-20 p-3 rounded-lg">
               <TrendingUp className="text-cyan-400" size={28} />
@@ -393,43 +507,6 @@ export default function EnhancedDashboard({ onAddContact, onFilterByStatus, onVi
               ))}
             </div>
           )}
-        </div>
-      </div>
-
-      <div className="bg-gradient-to-br from-slate-800 via-teal-900 to-slate-800 p-8 rounded-2xl border-2 border-cyan-500/40 shadow-2xl shadow-cyan-500/20">
-        <div className="flex items-center gap-2 mb-6">
-          <Sparkles className="text-cyan-400" size={24} />
-          <h2 className="text-2xl font-bold text-cyan-100">Pipeline Overview</h2>
-        </div>
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          <button
-            onClick={() => onFilterByStatus('Lead')}
-            className="bg-slate-900 rounded-xl p-5 border-l-4 border-cyan-400 shadow-lg hover:shadow-cyan-500/30 card-hover text-left transition-all hover:scale-105"
-          >
-            <p className="text-sm font-medium text-cyan-300 mb-2">New Leads</p>
-            <p className="text-4xl font-bold bg-gradient-to-r from-cyan-400 to-emerald-400 bg-clip-text text-transparent">{stats.newLeads}</p>
-          </button>
-          <button
-            onClick={() => onFilterByStatus('Contacted')}
-            className="bg-slate-900 rounded-xl p-5 border-l-4 border-blue-400 shadow-lg hover:shadow-blue-500/30 card-hover text-left transition-all hover:scale-105"
-          >
-            <p className="text-sm font-medium text-cyan-300 mb-2">Contacted</p>
-            <p className="text-4xl font-bold bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent">{stats.contacted}</p>
-          </button>
-          <button
-            onClick={() => onFilterByStatus('Proposal')}
-            className="bg-slate-900 rounded-xl p-5 border-l-4 border-teal-400 shadow-lg hover:shadow-teal-500/30 card-hover text-left transition-all hover:scale-105"
-          >
-            <p className="text-sm font-medium text-cyan-300 mb-2">Proposals</p>
-            <p className="text-4xl font-bold bg-gradient-to-r from-teal-400 to-emerald-400 bg-clip-text text-transparent">{stats.proposals}</p>
-          </button>
-          <button
-            onClick={() => onFilterByStatus('Closed Won')}
-            className="bg-slate-900 rounded-xl p-5 border-l-4 border-emerald-400 shadow-lg hover:shadow-emerald-500/30 card-hover text-left transition-all hover:scale-105"
-          >
-            <p className="text-sm font-medium text-cyan-300 mb-2">Closed Won</p>
-            <p className="text-4xl font-bold bg-gradient-to-r from-emerald-400 to-green-400 bg-clip-text text-transparent">{stats.closedWon}</p>
-          </button>
         </div>
       </div>
     </div>
