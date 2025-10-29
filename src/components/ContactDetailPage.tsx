@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { ArrowLeft, CreditCard as Edit2, Trash2, Mail, Phone, Building2, User, FileText, Clock, CheckSquare, Folder, Save, Plus, RefreshCw, Calendar, MessageSquare, PhoneCall, Send } from 'lucide-react';
 import { supabase, Contact, ContactActivity, Task } from '../lib/supabase';
 import FilesTab from './FilesTab';
+import EmailComposeModal from './EmailComposeModal';
 
 interface ContactDetailPageProps {
   contact: Contact;
@@ -36,6 +37,7 @@ export default function ContactDetailPage({
   const [showTaskModal, setShowTaskModal] = useState(false);
   const [editingTask, setEditingTask] = useState<Task | null>(null);
   const [statusSaved, setStatusSaved] = useState(false);
+  const [showEmailModal, setShowEmailModal] = useState(false);
 
   useEffect(() => {
     loadActivities();
@@ -303,6 +305,13 @@ export default function ContactDetailPage({
               </div>
             </div>
             <div className="flex gap-2">
+              <button
+                onClick={() => setShowEmailModal(true)}
+                className="flex items-center gap-2 gradient-button text-white px-5 py-2.5 rounded-xl font-medium shadow-lg shadow-cyan-500/30 hover:shadow-cyan-500/50 transition-all"
+              >
+                <Mail size={18} />
+                Send Email
+              </button>
               <button
                 onClick={() => onEdit(contact)}
                 className="flex items-center gap-2 bg-cyan-500/20 text-cyan-100 px-4 py-2 rounded-xl hover:bg-cyan-500/30 transition-all border border-cyan-500/40"
@@ -605,6 +614,17 @@ export default function ContactDetailPage({
 
       {showActivityModal && <ActivityModal />}
       {showTaskModal && <TaskModal />}
+      {showEmailModal && (
+        <EmailComposeModal
+          contact={contact}
+          onClose={() => setShowEmailModal(false)}
+          onSent={() => {
+            setShowEmailModal(false);
+            loadActivities();
+            onUpdate();
+          }}
+        />
+      )}
     </div>
   );
 
