@@ -137,8 +137,8 @@ export default function Dashboard({ onAddContact, onFilterByStatus }: DashboardP
               <p className="text-sm text-cyan-300">New Leads</p>
               <p className="text-3xl font-bold text-cyan-100 mt-2">{stats.newLeads}</p>
             </div>
-            <div className="bg-yellow-400 bg-opacity-20 p-3 rounded-lg backdrop-blur-sm">
-              <TrendingUp className="text-yellow-400" size={28} />
+            <div className="bg-cyan-400 bg-opacity-20 p-3 rounded-lg backdrop-blur-sm">
+              <TrendingUp className="text-cyan-400" size={28} />
             </div>
           </div>
         </button>
@@ -194,10 +194,10 @@ export default function Dashboard({ onAddContact, onFilterByStatus }: DashboardP
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
           <button
             onClick={() => onFilterByStatus('Lead')}
-            className="bg-slate-900 rounded-xl p-5 border-l-4 border-yellow-400 shadow-lg shadow-yellow-500/10 card-hover w-full text-left transition-all hover:scale-105"
+            className="bg-slate-900 rounded-xl p-5 border-l-4 border-cyan-400 shadow-lg shadow-cyan-500/10 card-hover w-full text-left transition-all hover:scale-105"
           >
             <p className="text-sm font-medium text-cyan-300 mb-2">New Leads</p>
-            <p className="text-4xl font-bold bg-gradient-to-r from-yellow-400 to-amber-400 bg-clip-text text-transparent">{stats.newLeads}</p>
+            <p className="text-4xl font-bold bg-gradient-to-r from-cyan-400 to-emerald-400 bg-clip-text text-transparent">{stats.newLeads}</p>
           </button>
           <button
             onClick={() => onFilterByStatus('Contacted')}

@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { LayoutDashboard, Users } from 'lucide-react';
-import Dashboard from './components/Dashboard';
+import EnhancedDashboard from './components/EnhancedDashboard';
 import ContactsPage from './components/ContactsPage';
 import ContactDetailPage from './components/ContactDetailPage';
 import ContactForm from './components/ContactForm';
@@ -100,7 +100,7 @@ function App() {
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {currentView === 'dashboard' && (
-          <Dashboard key={`dashboard-${refreshKey}`} onAddContact={handleAddContact} onFilterByStatus={handleFilterByStatus} />
+          <EnhancedDashboard key={`dashboard-${refreshKey}`} onAddContact={handleAddContact} onFilterByStatus={handleFilterByStatus} onViewContact={handleViewContact} />
         )}
         {currentView === 'contacts' && (
           <ContactsPage key={`contacts-${refreshKey}`} onViewContact={handleViewContact} initialStatusFilter={statusFilter} />

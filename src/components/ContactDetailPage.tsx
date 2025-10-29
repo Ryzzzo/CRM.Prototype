@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { ArrowLeft, CreditCard as Edit2, Trash2, Mail, Phone, Building2, User, FileText, Clock, CheckSquare, Folder, Save, Plus, RefreshCw, Calendar, MessageSquare, PhoneCall, Send } from 'lucide-react';
 import { supabase, Contact, ContactActivity, Task } from '../lib/supabase';
+import FilesTab from './FilesTab';
 
 interface ContactDetailPageProps {
   contact: Contact;
@@ -72,7 +73,7 @@ export default function ContactDetailPage({
             break;
           case 'meeting':
             icon = '📅';
-            color = 'text-yellow-400';
+            color = 'text-cyan-400';
             break;
           case 'call':
             icon = '📞';
@@ -160,7 +161,7 @@ export default function ContactDetailPage({
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'Lead':
-        return 'bg-yellow-500/20 text-yellow-400 border-yellow-500/40';
+        return 'bg-cyan-500/20 text-cyan-100 border-cyan-500/40';
       case 'Contacted':
         return 'bg-blue-500/20 text-blue-400 border-blue-500/40';
       case 'Proposal':
@@ -248,7 +249,7 @@ export default function ContactDetailPage({
       case 'high':
         return 'bg-red-500';
       case 'medium':
-        return 'bg-yellow-500';
+        return 'bg-cyan-500';
       case 'low':
         return 'bg-green-500';
       default:
@@ -597,11 +598,7 @@ export default function ContactDetailPage({
           )}
 
           {activeTab === 'files' && (
-            <div className="text-center py-12">
-              <Folder className="mx-auto text-cyan-400 mb-4" size={48} />
-              <p className="text-cyan-300 text-lg mb-2">File attachments coming soon</p>
-              <p className="text-cyan-500 text-sm">Upload and manage files related to this contact</p>
-            </div>
+            <FilesTab contactId={contact.id} />
           )}
         </div>
       </div>

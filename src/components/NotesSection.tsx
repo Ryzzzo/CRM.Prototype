@@ -205,7 +205,7 @@ export default function NotesSection({ contactId, onUpdate }: NotesSectionProps)
               key={note.id}
               className={`p-4 rounded-xl border-2 transition-all ${
                 note.pinned
-                  ? 'bg-gradient-to-br from-amber-50 to-yellow-50 border-amber-200'
+                  ? 'bg-gradient-to-br from-cyan-50 to-teal-50 border-cyan-200'
                   : 'bg-white border-gray-200 card-hover'
               }`}
             >

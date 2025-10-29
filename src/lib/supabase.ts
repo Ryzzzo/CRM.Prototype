@@ -47,3 +47,38 @@ export interface Note {
   created_at: string;
   updated_at: string;
 }
+
+export interface Deal {
+  id: string;
+  contact_id: string;
+  name: string;
+  value: number;
+  stage: 'Lead' | 'Qualified' | 'Proposal' | 'Negotiation' | 'Closed Won' | 'Closed Lost';
+  expected_close_date: string;
+  probability: number;
+  description: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface File {
+  id: string;
+  contact_id: string;
+  filename: string;
+  file_type: string;
+  file_size: number;
+  category: 'Contract' | 'Proposal' | 'Invoice' | 'Document' | 'Image' | 'Other';
+  storage_path: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface EmailTemplate {
+  id: string;
+  name: string;
+  subject: string;
+  body: string;
+  is_default: boolean;
+  created_at: string;
+  updated_at: string;
+}
