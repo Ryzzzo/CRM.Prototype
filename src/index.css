@@ -53,8 +53,8 @@
   }
 
   .table-row-hover:hover {
-    background-color: rgb(240, 253, 250);
-    box-shadow: 0 2px 8px -2px rgba(6, 182, 212, 0.15);
+    background-color: rgba(6, 182, 212, 0.15);
+    box-shadow: 0 2px 8px -2px rgba(6, 182, 212, 0.2);
   }
 
   .gradient-cosmic {
