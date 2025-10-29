@@ -4,16 +4,21 @@ import { supabase, Contact } from '../lib/supabase';
 
 interface ContactsPageProps {
   onViewContact: (contact: Contact) => void;
+  initialStatusFilter?: string;
 }
 
-export default function ContactsPage({ onViewContact }: ContactsPageProps) {
+export default function ContactsPage({ onViewContact, initialStatusFilter = 'All' }: ContactsPageProps) {
   const [contacts, setContacts] = useState<Contact[]>([]);
   const [filteredContacts, setFilteredContacts] = useState<Contact[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
-  const [statusFilter, setStatusFilter] = useState('All');
+  const [statusFilter, setStatusFilter] = useState(initialStatusFilter);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
+
+  useEffect(() => {
+    setStatusFilter(initialStatusFilter);
+  }, [initialStatusFilter]);
 
   useEffect(() => {
     loadContacts();

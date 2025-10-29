@@ -4,6 +4,7 @@ import { supabase, Contact, ContactActivity } from '../lib/supabase';
 
 interface DashboardProps {
   onAddContact: () => void;
+  onFilterByStatus: (status: string) => void;
 }
 
 interface Stats {
@@ -14,7 +15,7 @@ interface Stats {
   closedWon: number;
 }
 
-export default function Dashboard({ onAddContact }: DashboardProps) {
+export default function Dashboard({ onAddContact, onFilterByStatus }: DashboardProps) {
   const [stats, setStats] = useState<Stats>({
     total: 0,
     newLeads: 0,
@@ -127,7 +128,10 @@ export default function Dashboard({ onAddContact }: DashboardProps) {
           </div>
         </div>
 
-        <div className="bg-slate-800 p-6 rounded-xl shadow-lg border-2 border-cyan-500/30 card-hover">
+        <button
+          onClick={() => onFilterByStatus('Lead')}
+          className="bg-slate-800 p-6 rounded-xl shadow-lg border-2 border-cyan-500/30 card-hover w-full text-left transition-all hover:scale-105"
+        >
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm text-cyan-300">New Leads</p>
@@ -137,9 +141,12 @@ export default function Dashboard({ onAddContact }: DashboardProps) {
               <TrendingUp className="text-yellow-400" size={28} />
             </div>
           </div>
-        </div>
+        </button>
 
-        <div className="bg-slate-800 p-6 rounded-xl shadow-lg border-2 border-cyan-500/30 card-hover">
+        <button
+          onClick={() => onFilterByStatus('Contacted')}
+          className="bg-slate-800 p-6 rounded-xl shadow-lg border-2 border-cyan-500/30 card-hover w-full text-left transition-all hover:scale-105"
+        >
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm text-cyan-300">Contacted</p>
@@ -149,9 +156,12 @@ export default function Dashboard({ onAddContact }: DashboardProps) {
               <Users className="text-cyan-400" size={28} />
             </div>
           </div>
-        </div>
+        </button>
 
-        <div className="bg-slate-800 p-6 rounded-xl shadow-lg border-2 border-cyan-500/30 card-hover">
+        <button
+          onClick={() => onFilterByStatus('Proposal')}
+          className="bg-slate-800 p-6 rounded-xl shadow-lg border-2 border-cyan-500/30 card-hover w-full text-left transition-all hover:scale-105"
+        >
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm text-cyan-300">Proposals</p>
@@ -161,7 +171,7 @@ export default function Dashboard({ onAddContact }: DashboardProps) {
               <FileText className="text-teal-400" size={28} />
             </div>
           </div>
-        </div>
+        </button>
 
         <div className="gradient-emerald-teal p-6 rounded-xl shadow-lg shadow-emerald-500/30 card-hover text-white border border-emerald-400/30">
           <div className="flex items-center justify-between">
@@ -182,22 +192,34 @@ export default function Dashboard({ onAddContact }: DashboardProps) {
           <h2 className="text-2xl font-bold text-cyan-100">Pipeline Overview</h2>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-          <div className="bg-slate-900 rounded-xl p-5 border-l-4 border-yellow-400 shadow-lg shadow-yellow-500/10 card-hover">
+          <button
+            onClick={() => onFilterByStatus('Lead')}
+            className="bg-slate-900 rounded-xl p-5 border-l-4 border-yellow-400 shadow-lg shadow-yellow-500/10 card-hover w-full text-left transition-all hover:scale-105"
+          >
             <p className="text-sm font-medium text-cyan-300 mb-2">New Leads</p>
             <p className="text-4xl font-bold bg-gradient-to-r from-yellow-400 to-amber-400 bg-clip-text text-transparent">{stats.newLeads}</p>
-          </div>
-          <div className="bg-slate-900 rounded-xl p-5 border-l-4 border-cyan-400 shadow-lg shadow-cyan-500/10 card-hover">
+          </button>
+          <button
+            onClick={() => onFilterByStatus('Contacted')}
+            className="bg-slate-900 rounded-xl p-5 border-l-4 border-cyan-400 shadow-lg shadow-cyan-500/10 card-hover w-full text-left transition-all hover:scale-105"
+          >
             <p className="text-sm font-medium text-cyan-300 mb-2">Contacted</p>
             <p className="text-4xl font-bold bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent">{stats.contacted}</p>
-          </div>
-          <div className="bg-slate-900 rounded-xl p-5 border-l-4 border-teal-400 shadow-lg shadow-teal-500/10 card-hover">
+          </button>
+          <button
+            onClick={() => onFilterByStatus('Proposal')}
+            className="bg-slate-900 rounded-xl p-5 border-l-4 border-teal-400 shadow-lg shadow-teal-500/10 card-hover w-full text-left transition-all hover:scale-105"
+          >
             <p className="text-sm font-medium text-cyan-300 mb-2">Proposals</p>
             <p className="text-4xl font-bold bg-gradient-to-r from-teal-400 to-emerald-400 bg-clip-text text-transparent">{stats.proposals}</p>
-          </div>
-          <div className="bg-slate-900 rounded-xl p-5 border-l-4 border-emerald-400 shadow-lg shadow-emerald-500/10 card-hover">
+          </button>
+          <button
+            onClick={() => onFilterByStatus('Closed Won')}
+            className="bg-slate-900 rounded-xl p-5 border-l-4 border-emerald-400 shadow-lg shadow-emerald-500/10 card-hover w-full text-left transition-all hover:scale-105"
+          >
             <p className="text-sm font-medium text-cyan-300 mb-2">Closed Won</p>
             <p className="text-4xl font-bold bg-gradient-to-r from-emerald-400 to-green-400 bg-clip-text text-transparent">{stats.closedWon}</p>
-          </div>
+          </button>
         </div>
       </div>
 

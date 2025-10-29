@@ -15,6 +15,7 @@ function App() {
   const [editingContact, setEditingContact] = useState<Contact | null>(null);
   const [showAddForm, setShowAddForm] = useState(false);
   const [refreshKey, setRefreshKey] = useState(0);
+  const [statusFilter, setStatusFilter] = useState<string>('All');
 
   const handleViewContact = (contact: Contact) => {
     setSelectedContact(contact);
@@ -45,6 +46,11 @@ function App() {
 
   const handleAddContact = () => {
     setShowAddForm(true);
+  };
+
+  const handleFilterByStatus = (status: string) => {
+    setStatusFilter(status);
+    setCurrentView('contacts');
   };
 
   const handleUpdate = () => {
@@ -94,10 +100,10 @@ function App() {
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {currentView === 'dashboard' && (
-          <Dashboard key={`dashboard-${refreshKey}`} onAddContact={handleAddContact} />
+          <Dashboard key={`dashboard-${refreshKey}`} onAddContact={handleAddContact} onFilterByStatus={handleFilterByStatus} />
         )}
         {currentView === 'contacts' && (
-          <ContactsPage key={`contacts-${refreshKey}`} onViewContact={handleViewContact} />
+          <ContactsPage key={`contacts-${refreshKey}`} onViewContact={handleViewContact} initialStatusFilter={statusFilter} />
         )}
         {currentView === 'contact-detail' && selectedContact && (
           <ContactDetailPage
