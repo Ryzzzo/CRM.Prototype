@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
-import { ArrowLeft, CreditCard as Edit2, Trash2, Mail, Phone, Building2, User, FileText, Clock, CheckSquare, Folder, Save, Plus, RefreshCw, Calendar, MessageSquare, PhoneCall, Send } from 'lucide-react';
-import { supabase, Contact, ContactActivity, Task } from '../lib/supabase';
+import { ArrowLeft, CreditCard as Edit2, Trash2, Mail, Phone, Building2, User, FileText, Clock, CheckSquare, Folder, Save, Plus, RefreshCw, Calendar, MessageSquare, PhoneCall, Send, DollarSign } from 'lucide-react';
+import { supabase, Contact, ContactActivity, Task, Deal, File as FileType } from '../lib/supabase';
 import FilesTab from './FilesTab';
 import EmailComposeModal from './EmailComposeModal';
 
@@ -12,7 +12,7 @@ interface ContactDetailPageProps {
   onUpdate: () => void;
 }
 
-type TabType = 'overview' | 'activity' | 'tasks' | 'files';
+type TabType = 'overview' | 'activity' | 'tasks' | 'files' | 'deals';
 
 interface ActivityWithType extends ContactActivity {
   icon: string;
@@ -38,10 +38,14 @@ export default function ContactDetailPage({
   const [editingTask, setEditingTask] = useState<Task | null>(null);
   const [statusSaved, setStatusSaved] = useState(false);
   const [showEmailModal, setShowEmailModal] = useState(false);
+  const [deals, setDeals] = useState<Deal[]>([]);
+  const [files, setFiles] = useState<FileType[]>([]);
 
   useEffect(() => {
     loadActivities();
     loadTasks();
+    loadDeals();
+    loadFiles();
   }, [contact.id]);
 
   const loadActivities = async () => {
@@ -99,6 +103,29 @@ export default function ContactDetailPage({
 
     if (data) {
       setTasks(data);
+    }
+  };
+
+  const loadDeals = async () => {
+    const { data } = await supabase
+      .from('deals')
+      .select('*')
+      .eq('contact_id', contact.id)
+      .order('created_at', { ascending: false });
+
+    if (data) {
+      setDeals(data);
+    }
+  };
+
+  const loadFiles = async () => {
+    const { data } = await supabase
+      .from('files')
+      .select('*')
+      .eq('contact_id', contact.id);
+
+    if (data) {
+      setFiles(data);
     }
   };
 
@@ -335,19 +362,28 @@ export default function ContactDetailPage({
         </div>
 
         <div className="border-b border-cyan-500/30">
-          <div className="flex gap-1 p-2">
-            {(['overview', 'activity', 'tasks', 'files'] as TabType[]).map((tab) => (
+          <div className="flex gap-1 p-2 overflow-x-auto">
+            {(['overview', 'activity', 'tasks', 'files', 'deals'] as TabType[]).map((tab) => (
               <button
                 key={tab}
                 onClick={() => setActiveTab(tab)}
-                className={`flex-1 flex items-center justify-center gap-2 px-6 py-3 rounded-lg font-medium transition-all ${
+                className={`flex items-center justify-center gap-2 px-6 py-3 rounded-lg font-medium transition-all whitespace-nowrap ${
                   activeTab === tab
                     ? 'bg-cyan-500/20 text-cyan-100 border-b-2 border-cyan-400'
                     : 'text-cyan-400 hover:bg-cyan-500/10'
                 }`}
               >
                 {tab === 'overview' && <User size={18} />}
-                {tab === 'activity' && <Clock size={18} />}
+                {tab === 'activity' && (
+                  <>
+                    <Clock size={18} />
+                    {activities.length > 0 && (
+                      <span className="bg-emerald-400 text-slate-900 text-xs font-bold px-2 py-0.5 rounded-full">
+                        {activities.length}
+                      </span>
+                    )}
+                  </>
+                )}
                 {tab === 'tasks' && (
                   <>
                     <CheckSquare size={18} />
@@ -358,7 +394,26 @@ export default function ContactDetailPage({
                     )}
                   </>
                 )}
-                {tab === 'files' && <Folder size={18} />}
+                {tab === 'files' && (
+                  <>
+                    <Folder size={18} />
+                    {files.length > 0 && (
+                      <span className="bg-purple-400 text-slate-900 text-xs font-bold px-2 py-0.5 rounded-full">
+                        {files.length}
+                      </span>
+                    )}
+                  </>
+                )}
+                {tab === 'deals' && (
+                  <>
+                    <DollarSign size={18} />
+                    {deals.length > 0 && (
+                      <span className="bg-green-400 text-slate-900 text-xs font-bold px-2 py-0.5 rounded-full">
+                        {deals.length}
+                      </span>
+                    )}
+                  </>
+                )}
                 <span className="capitalize">{tab}</span>
               </button>
             ))}
@@ -607,7 +662,67 @@ export default function ContactDetailPage({
           )}
 
           {activeTab === 'files' && (
-            <FilesTab contactId={contact.id} />
+            <FilesTab contactId={contact.id} key={`files-${contact.id}`} />
+          )}
+
+          {activeTab === 'deals' && (
+            <div className="space-y-6">
+              <div className="flex justify-between items-center">
+                <h3 className="text-lg font-bold text-cyan-100 uppercase tracking-wide">Associated Deals</h3>
+              </div>
+
+              {deals.length === 0 ? (
+                <div className="text-center py-12 bg-slate-900 rounded-xl border-2 border-cyan-500/20">
+                  <DollarSign className="mx-auto text-cyan-400/50 mb-4" size={64} />
+                  <p className="text-cyan-300 text-lg mb-2">No deals yet</p>
+                  <p className="text-cyan-400 text-sm">Create a deal from the Deals page</p>
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {deals.map((deal) => (
+                    <div
+                      key={deal.id}
+                      className="bg-slate-900 p-5 rounded-xl border-2 border-cyan-500/40 hover:border-cyan-400 transition-all group"
+                    >
+                      <div className="flex items-start justify-between mb-3">
+                        <h4 className="font-bold text-cyan-100 text-lg">{deal.name}</h4>
+                        <span className={`px-3 py-1 rounded-full text-xs font-bold ${
+                          deal.stage === 'Closed Won' ? 'bg-green-500/20 text-green-400' :
+                          deal.stage === 'Closed Lost' ? 'bg-red-500/20 text-red-400' :
+                          deal.stage === 'Negotiation' ? 'bg-teal-500/20 text-teal-400' :
+                          deal.stage === 'Proposal' ? 'bg-purple-500/20 text-purple-400' :
+                          deal.stage === 'Qualified' ? 'bg-blue-500/20 text-blue-400' :
+                          'bg-cyan-500/20 text-cyan-400'
+                        }`}>
+                          {deal.stage}
+                        </span>
+                      </div>
+
+                      <div className="mb-4">
+                        <p className="text-3xl font-bold bg-gradient-to-r from-cyan-400 to-emerald-400 bg-clip-text text-transparent">
+                          {new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(Number(deal.value))}
+                        </p>
+                      </div>
+
+                      {deal.description && (
+                        <p className="text-sm text-cyan-400 mb-3 line-clamp-2">{deal.description}</p>
+                      )}
+
+                      <div className="flex items-center justify-between text-xs">
+                        <div className="text-cyan-500">
+                          Probability: <span className="font-bold">{deal.probability}%</span>
+                        </div>
+                        {deal.expected_close_date && (
+                          <div className="text-cyan-500">
+                            Close: {new Date(deal.expected_close_date).toLocaleDateString()}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
           )}
         </div>
       </div>

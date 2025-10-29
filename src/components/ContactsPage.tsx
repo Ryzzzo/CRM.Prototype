@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
-import { Search, Filter, ChevronLeft, ChevronRight } from 'lucide-react';
-import { supabase, Contact } from '../lib/supabase';
+import { Search, Filter, ChevronLeft, ChevronRight, X, Calendar, FileText, CheckSquare } from 'lucide-react';
+import { supabase, Contact, Task } from '../lib/supabase';
 
 interface ContactsPageProps {
   onViewContact: (contact: Contact) => void;
@@ -14,6 +14,12 @@ export default function ContactsPage({ onViewContact, initialStatusFilter = 'All
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState(initialStatusFilter);
   const [currentPage, setCurrentPage] = useState(1);
+  const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
+  const [dateFrom, setDateFrom] = useState('');
+  const [dateTo, setDateTo] = useState('');
+  const [hasNotes, setHasNotes] = useState(false);
+  const [hasOverdueTasks, setHasOverdueTasks] = useState(false);
+  const [tasksData, setTasksData] = useState<Task[]>([]);
   const itemsPerPage = 10;
 
   useEffect(() => {
@@ -26,7 +32,7 @@ export default function ContactsPage({ onViewContact, initialStatusFilter = 'All
 
   useEffect(() => {
     filterContacts();
-  }, [contacts, searchTerm, statusFilter]);
+  }, [contacts, searchTerm, statusFilter, dateFrom, dateTo, hasNotes, hasOverdueTasks, tasksData]);
 
   const loadContacts = async () => {
     setLoading(true);
@@ -38,6 +44,15 @@ export default function ContactsPage({ onViewContact, initialStatusFilter = 'All
     if (data) {
       setContacts(data);
     }
+
+    const { data: tasks } = await supabase
+      .from('tasks')
+      .select('*');
+
+    if (tasks) {
+      setTasksData(tasks);
+    }
+
     setLoading(false);
   };
 
@@ -58,8 +73,47 @@ export default function ContactsPage({ onViewContact, initialStatusFilter = 'All
       filtered = filtered.filter(contact => contact.status === statusFilter);
     }
 
+    if (dateFrom) {
+      filtered = filtered.filter(contact => new Date(contact.created_at) >= new Date(dateFrom));
+    }
+
+    if (dateTo) {
+      filtered = filtered.filter(contact => new Date(contact.created_at) <= new Date(dateTo));
+    }
+
+    if (hasNotes) {
+      filtered = filtered.filter(contact => contact.notes && contact.notes.trim().length > 0);
+    }
+
+    if (hasOverdueTasks) {
+      const now = new Date();
+      const contactsWithOverdue = tasksData
+        .filter(task => !task.completed && new Date(task.due_date) < now)
+        .map(task => task.contact_id);
+      filtered = filtered.filter(contact => contactsWithOverdue.includes(contact.id));
+    }
+
     setFilteredContacts(filtered);
     setCurrentPage(1);
+  };
+
+  const clearAllFilters = () => {
+    setStatusFilter('All');
+    setDateFrom('');
+    setDateTo('');
+    setHasNotes(false);
+    setHasOverdueTasks(false);
+    setSearchTerm('');
+  };
+
+  const getActiveFilterCount = () => {
+    let count = 0;
+    if (statusFilter !== 'All') count++;
+    if (dateFrom) count++;
+    if (dateTo) count++;
+    if (hasNotes) count++;
+    if (hasOverdueTasks) count++;
+    return count;
   };
 
   const formatDate = (dateString: string) => {
@@ -137,7 +191,97 @@ export default function ContactsPage({ onViewContact, initialStatusFilter = 'All
               <option>Closed Lost</option>
             </select>
           </div>
+          <button
+            onClick={() => setShowAdvancedFilters(!showAdvancedFilters)}
+            className={`flex items-center gap-2 px-4 py-3 rounded-xl font-medium transition-all ${
+              showAdvancedFilters || getActiveFilterCount() > 0
+                ? 'bg-cyan-500 text-white shadow-lg shadow-cyan-500/30'
+                : 'bg-slate-900 text-cyan-300 border-2 border-cyan-500/40 hover:bg-slate-700'
+            }`}
+          >
+            <Filter size={20} />
+            Advanced
+            {getActiveFilterCount() > 0 && (
+              <span className="px-2 py-0.5 bg-white text-cyan-900 rounded-full text-xs font-bold">
+                {getActiveFilterCount()}
+              </span>
+            )}
+          </button>
         </div>
+
+        {showAdvancedFilters && (
+          <div className="mb-6 p-5 bg-slate-900 rounded-xl border-2 border-cyan-500/30">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-bold text-cyan-100">Advanced Filters</h3>
+              <button
+                onClick={clearAllFilters}
+                className="flex items-center gap-2 px-3 py-1.5 bg-red-500/20 text-red-400 rounded-lg hover:bg-red-500/30 transition-all text-sm font-medium"
+              >
+                <X size={16} />
+                Clear All
+              </button>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-cyan-300 mb-2 flex items-center gap-2">
+                  <Calendar size={16} />
+                  Date Added From
+                </label>
+                <input
+                  type="date"
+                  value={dateFrom}
+                  onChange={(e) => setDateFrom(e.target.value)}
+                  className="w-full px-4 py-2.5 bg-slate-800 border-2 border-cyan-500/40 rounded-xl text-cyan-100 focus:ring-2 focus:ring-cyan-500 focus:border-cyan-400 transition-all"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-cyan-300 mb-2 flex items-center gap-2">
+                  <Calendar size={16} />
+                  Date Added To
+                </label>
+                <input
+                  type="date"
+                  value={dateTo}
+                  onChange={(e) => setDateTo(e.target.value)}
+                  className="w-full px-4 py-2.5 bg-slate-800 border-2 border-cyan-500/40 rounded-xl text-cyan-100 focus:ring-2 focus:ring-cyan-500 focus:border-cyan-400 transition-all"
+                />
+              </div>
+
+              <div className="flex items-center gap-3 p-4 bg-slate-800 rounded-xl border-2 border-cyan-500/30 cursor-pointer hover:border-cyan-400 transition-all"
+                onClick={() => setHasNotes(!hasNotes)}
+              >
+                <input
+                  type="checkbox"
+                  checked={hasNotes}
+                  onChange={(e) => setHasNotes(e.target.checked)}
+                  className="w-5 h-5 rounded border-2 border-cyan-500/40 bg-slate-900 text-cyan-500 focus:ring-2 focus:ring-cyan-500"
+                />
+                <div className="flex items-center gap-2 text-cyan-100 font-medium">
+                  <FileText size={18} className="text-cyan-400" />
+                  Has Notes
+                </div>
+              </div>
+
+              <div className="flex items-center gap-3 p-4 bg-slate-800 rounded-xl border-2 border-cyan-500/30 cursor-pointer hover:border-cyan-400 transition-all"
+                onClick={() => setHasOverdueTasks(!hasOverdueTasks)}
+              >
+                <input
+                  type="checkbox"
+                  checked={hasOverdueTasks}
+                  onChange={(e) => setHasOverdueTasks(e.target.checked)}
+                  className="w-5 h-5 rounded border-2 border-cyan-500/40 bg-slate-900 text-cyan-500 focus:ring-2 focus:ring-cyan-500"
+                />
+                <div className="flex items-center gap-2 text-cyan-100 font-medium">
+                  <CheckSquare size={18} className="text-red-400" />
+                  Has Overdue Tasks
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
 
         <div className="overflow-x-auto">
           <table className="w-full">
