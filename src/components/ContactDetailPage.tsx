@@ -53,6 +53,7 @@ export default function ContactDetailPage({
   const [showActivityModal, setShowActivityModal] = useState(false);
   const [showTaskModal, setShowTaskModal] = useState(false);
   const [editingTask, setEditingTask] = useState<Task | null>(null);
+  const [statusSaved, setStatusSaved] = useState(false);
 
   useEffect(() => {
     loadActivities();
@@ -158,6 +159,9 @@ export default function ContactDetailPage({
       setContact({ ...contact, status: newStatus as Contact['status'] });
       loadActivities();
       onUpdate();
+
+      setStatusSaved(true);
+      setTimeout(() => setStatusSaved(false), 2000);
     }
   };
 
@@ -390,17 +394,25 @@ export default function ContactDetailPage({
                   <div className="space-y-3">
                     <div>
                       <p className="text-xs text-cyan-400 mb-2">Current Status</p>
-                      <select
-                        value={contact.status}
-                        onChange={(e) => handleStatusChange(e.target.value)}
-                        className="w-full px-4 py-2 bg-slate-900 border-2 border-cyan-500/40 rounded-xl focus:ring-2 focus:ring-cyan-500 focus:border-cyan-400 text-cyan-100 transition-all"
-                      >
-                        <option>Lead</option>
-                        <option>Contacted</option>
-                        <option>Proposal</option>
-                        <option>Closed Won</option>
-                        <option>Closed Lost</option>
-                      </select>
+                      <div className="relative">
+                        <select
+                          value={contact.status}
+                          onChange={(e) => handleStatusChange(e.target.value)}
+                          className="w-full px-4 py-2 bg-slate-900 border-2 border-cyan-500/40 rounded-xl focus:ring-2 focus:ring-cyan-500 focus:border-cyan-400 text-cyan-100 transition-all"
+                        >
+                          <option>Lead</option>
+                          <option>Contacted</option>
+                          <option>Proposal</option>
+                          <option>Closed Won</option>
+                          <option>Closed Lost</option>
+                        </select>
+                        {statusSaved && (
+                          <div className="absolute -bottom-8 left-0 right-0 flex items-center justify-center gap-1.5 text-emerald-400 text-xs font-medium animate-fade-in">
+                            <CheckSquare size={14} />
+                            Status updated
+                          </div>
+                        )}
+                      </div>
                     </div>
                     <div>
                       <p className="text-xs text-cyan-400 mb-2">Tags</p>
