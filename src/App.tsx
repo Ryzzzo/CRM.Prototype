@@ -2,12 +2,12 @@ import { useState } from 'react';
 import { LayoutDashboard, Users } from 'lucide-react';
 import Dashboard from './components/Dashboard';
 import ContactsPage from './components/ContactsPage';
-import ContactDetailModal from './components/ContactDetailModal';
+import ContactDetailPage from './components/ContactDetailPage';
 import ContactForm from './components/ContactForm';
 import { Contact } from './lib/supabase';
 import { supabase } from './lib/supabase';
 
-type View = 'dashboard' | 'contacts';
+type View = 'dashboard' | 'contacts' | 'contact-detail';
 
 function App() {
   const [currentView, setCurrentView] = useState<View>('dashboard');
@@ -18,20 +18,22 @@ function App() {
 
   const handleViewContact = (contact: Contact) => {
     setSelectedContact(contact);
+    setCurrentView('contact-detail');
   };
 
   const handleCloseDetail = () => {
     setSelectedContact(null);
+    setCurrentView('contacts');
   };
 
   const handleEdit = (contact: Contact) => {
     setEditingContact(contact);
-    setSelectedContact(null);
   };
 
   const handleDelete = async (contact: Contact) => {
     await supabase.from('contacts').delete().eq('id', contact.id);
     setSelectedContact(null);
+    setCurrentView('contacts');
     setRefreshKey(prev => prev + 1);
   };
 
@@ -97,17 +99,17 @@ function App() {
         {currentView === 'contacts' && (
           <ContactsPage key={`contacts-${refreshKey}`} onViewContact={handleViewContact} />
         )}
+        {currentView === 'contact-detail' && selectedContact && (
+          <ContactDetailPage
+            key={`contact-detail-${selectedContact.id}-${refreshKey}`}
+            contact={selectedContact}
+            onBack={handleCloseDetail}
+            onEdit={handleEdit}
+            onDelete={handleDelete}
+            onUpdate={handleUpdate}
+          />
+        )}
       </main>
-
-      {selectedContact && (
-        <ContactDetailModal
-          contact={selectedContact}
-          onClose={handleCloseDetail}
-          onEdit={handleEdit}
-          onDelete={handleDelete}
-          onUpdate={handleUpdate}
-        />
-      )}
 
       {(showAddForm || editingContact) && (
         <ContactForm
