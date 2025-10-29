@@ -1,24 +1,5 @@
 import { useState, useEffect } from 'react';
-import {
-  ArrowLeft,
-  Edit2,
-  Trash2,
-  Mail,
-  Phone,
-  Building2,
-  User,
-  FileText,
-  Clock,
-  CheckSquare,
-  Folder,
-  Save,
-  Plus,
-  RefreshCw,
-  Calendar,
-  MessageSquare,
-  PhoneCall,
-  Send,
-} from 'lucide-react';
+import { ArrowLeft, CreditCard as Edit2, Trash2, Mail, Phone, Building2, User, FileText, Clock, CheckSquare, Folder, Save, Plus, RefreshCw, Calendar, MessageSquare, PhoneCall, Send } from 'lucide-react';
 import { supabase, Contact, ContactActivity, Task } from '../lib/supabase';
 
 interface ContactDetailPageProps {
