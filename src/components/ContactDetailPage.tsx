@@ -123,7 +123,12 @@ export default function ContactDetailPage({
   };
 
   const handleStatusChange = async (newStatus: string) => {
+    if (newStatus === contact.status) return;
+
     const oldStatus = contact.status;
+
+    // Update local state immediately for instant UI feedback
+    setContact(prev => ({ ...prev, status: newStatus as Contact['status'] }));
 
     const { error } = await supabase
       .from('contacts')
@@ -137,12 +142,15 @@ export default function ContactDetailPage({
         content: `Status changed from ${oldStatus} to ${newStatus}`,
       });
 
-      setContact({ ...contact, status: newStatus as Contact['status'] });
       loadActivities();
       onUpdate();
 
+      // Show success notification
       setStatusSaved(true);
       setTimeout(() => setStatusSaved(false), 2000);
+    } else {
+      // Revert on error
+      setContact(prev => ({ ...prev, status: oldStatus }));
     }
   };
 
