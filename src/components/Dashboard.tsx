@@ -100,14 +100,14 @@ export default function Dashboard({ onAddContact }: DashboardProps) {
     <div className="space-y-6">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
-          <h1 className="text-4xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
+          <h1 className="text-4xl font-bold bg-gradient-to-r from-cyan-400 to-emerald-400 bg-clip-text text-transparent">
             Dashboard
           </h1>
-          <p className="text-gray-600 mt-1">Welcome back! Here's your CRM overview</p>
+          <p className="text-cyan-100 mt-1">Welcome back! Here's your CRM overview</p>
         </div>
         <button
           onClick={onAddContact}
-          className="flex items-center gap-2 gradient-button text-white px-6 py-3 rounded-xl font-medium shadow-lg"
+          className="flex items-center gap-2 gradient-button text-white px-6 py-3 rounded-xl font-medium shadow-lg shadow-cyan-500/50"
         >
           <Plus size={20} />
           Add Contact
@@ -115,113 +115,113 @@ export default function Dashboard({ onAddContact }: DashboardProps) {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
-        <div className="bg-gradient-to-br from-indigo-500 to-indigo-600 p-6 rounded-xl shadow-lg card-hover text-white">
+        <div className="gradient-teal-cyan p-6 rounded-xl shadow-lg shadow-cyan-500/30 card-hover text-white border border-cyan-400/30">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-indigo-100">Total Contacts</p>
+              <p className="text-sm text-cyan-100">Total Contacts</p>
               <p className="text-3xl font-bold mt-2">{stats.total}</p>
             </div>
-            <div className="bg-white bg-opacity-20 p-3 rounded-lg">
+            <div className="bg-white bg-opacity-20 p-3 rounded-lg backdrop-blur-sm">
               <Users size={28} />
             </div>
           </div>
         </div>
 
-        <div className="bg-white p-6 rounded-xl shadow-md border-2 border-gray-200 card-hover">
+        <div className="bg-slate-800 p-6 rounded-xl shadow-lg border-2 border-cyan-500/30 card-hover">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-600">New Leads</p>
-              <p className="text-3xl font-bold text-gray-900 mt-2">{stats.newLeads}</p>
+              <p className="text-sm text-cyan-300">New Leads</p>
+              <p className="text-3xl font-bold text-cyan-100 mt-2">{stats.newLeads}</p>
             </div>
-            <div className="bg-yellow-100 p-3 rounded-lg">
-              <TrendingUp className="text-yellow-600" size={28} />
+            <div className="bg-yellow-400 bg-opacity-20 p-3 rounded-lg backdrop-blur-sm">
+              <TrendingUp className="text-yellow-400" size={28} />
             </div>
           </div>
         </div>
 
-        <div className="bg-white p-6 rounded-xl shadow-md border-2 border-gray-200 card-hover">
+        <div className="bg-slate-800 p-6 rounded-xl shadow-lg border-2 border-cyan-500/30 card-hover">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-600">Contacted</p>
-              <p className="text-3xl font-bold text-gray-900 mt-2">{stats.contacted}</p>
+              <p className="text-sm text-cyan-300">Contacted</p>
+              <p className="text-3xl font-bold text-cyan-100 mt-2">{stats.contacted}</p>
             </div>
-            <div className="bg-blue-100 p-3 rounded-lg">
-              <Users className="text-blue-600" size={28} />
+            <div className="bg-cyan-400 bg-opacity-20 p-3 rounded-lg backdrop-blur-sm">
+              <Users className="text-cyan-400" size={28} />
             </div>
           </div>
         </div>
 
-        <div className="bg-white p-6 rounded-xl shadow-md border-2 border-gray-200 card-hover">
+        <div className="bg-slate-800 p-6 rounded-xl shadow-lg border-2 border-cyan-500/30 card-hover">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-600">Proposals</p>
-              <p className="text-3xl font-bold text-gray-900 mt-2">{stats.proposals}</p>
+              <p className="text-sm text-cyan-300">Proposals</p>
+              <p className="text-3xl font-bold text-cyan-100 mt-2">{stats.proposals}</p>
             </div>
-            <div className="bg-purple-100 p-3 rounded-lg">
-              <FileText className="text-purple-600" size={28} />
+            <div className="bg-teal-400 bg-opacity-20 p-3 rounded-lg backdrop-blur-sm">
+              <FileText className="text-teal-400" size={28} />
             </div>
           </div>
         </div>
 
-        <div className="bg-gradient-to-br from-green-500 to-green-600 p-6 rounded-xl shadow-lg card-hover text-white">
+        <div className="gradient-emerald-teal p-6 rounded-xl shadow-lg shadow-emerald-500/30 card-hover text-white border border-emerald-400/30">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-green-100">Closed Won</p>
+              <p className="text-sm text-emerald-100">Closed Won</p>
               <p className="text-3xl font-bold mt-2">{stats.closedWon}</p>
             </div>
-            <div className="bg-white bg-opacity-20 p-3 rounded-lg">
+            <div className="bg-white bg-opacity-20 p-3 rounded-lg backdrop-blur-sm">
               <CheckCircle size={28} />
             </div>
           </div>
         </div>
       </div>
 
-      <div className="bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 p-8 rounded-2xl border-2 border-indigo-200 shadow-lg">
+      <div className="bg-gradient-to-br from-slate-800 via-teal-900 to-slate-800 p-8 rounded-2xl border-2 border-cyan-500/40 shadow-2xl shadow-cyan-500/20">
         <div className="flex items-center gap-2 mb-6">
-          <Sparkles className="text-indigo-600" size={24} />
-          <h2 className="text-2xl font-bold text-gray-900">Pipeline Overview</h2>
+          <Sparkles className="text-cyan-400" size={24} />
+          <h2 className="text-2xl font-bold text-cyan-100">Pipeline Overview</h2>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-          <div className="bg-white rounded-xl p-5 border-l-4 border-yellow-500 shadow-md card-hover">
-            <p className="text-sm font-medium text-gray-600 mb-2">New Leads</p>
-            <p className="text-4xl font-bold bg-gradient-to-r from-yellow-600 to-orange-600 bg-clip-text text-transparent">{stats.newLeads}</p>
+          <div className="bg-slate-900 rounded-xl p-5 border-l-4 border-yellow-400 shadow-lg shadow-yellow-500/10 card-hover">
+            <p className="text-sm font-medium text-cyan-300 mb-2">New Leads</p>
+            <p className="text-4xl font-bold bg-gradient-to-r from-yellow-400 to-amber-400 bg-clip-text text-transparent">{stats.newLeads}</p>
           </div>
-          <div className="bg-white rounded-xl p-5 border-l-4 border-blue-500 shadow-md card-hover">
-            <p className="text-sm font-medium text-gray-600 mb-2">Contacted</p>
-            <p className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-cyan-600 bg-clip-text text-transparent">{stats.contacted}</p>
+          <div className="bg-slate-900 rounded-xl p-5 border-l-4 border-cyan-400 shadow-lg shadow-cyan-500/10 card-hover">
+            <p className="text-sm font-medium text-cyan-300 mb-2">Contacted</p>
+            <p className="text-4xl font-bold bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent">{stats.contacted}</p>
           </div>
-          <div className="bg-white rounded-xl p-5 border-l-4 border-purple-500 shadow-md card-hover">
-            <p className="text-sm font-medium text-gray-600 mb-2">Proposals</p>
-            <p className="text-4xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">{stats.proposals}</p>
+          <div className="bg-slate-900 rounded-xl p-5 border-l-4 border-teal-400 shadow-lg shadow-teal-500/10 card-hover">
+            <p className="text-sm font-medium text-cyan-300 mb-2">Proposals</p>
+            <p className="text-4xl font-bold bg-gradient-to-r from-teal-400 to-emerald-400 bg-clip-text text-transparent">{stats.proposals}</p>
           </div>
-          <div className="bg-white rounded-xl p-5 border-l-4 border-green-500 shadow-md card-hover">
-            <p className="text-sm font-medium text-gray-600 mb-2">Closed Won</p>
-            <p className="text-4xl font-bold bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent">{stats.closedWon}</p>
+          <div className="bg-slate-900 rounded-xl p-5 border-l-4 border-emerald-400 shadow-lg shadow-emerald-500/10 card-hover">
+            <p className="text-sm font-medium text-cyan-300 mb-2">Closed Won</p>
+            <p className="text-4xl font-bold bg-gradient-to-r from-emerald-400 to-green-400 bg-clip-text text-transparent">{stats.closedWon}</p>
           </div>
         </div>
       </div>
 
-      <div className="bg-white p-8 rounded-2xl shadow-md border-2 border-gray-200">
-        <h2 className="text-2xl font-bold text-gray-900 mb-6">Recent Activity</h2>
+      <div className="bg-slate-800 p-8 rounded-2xl shadow-2xl border-2 border-cyan-500/40 shadow-cyan-500/10">
+        <h2 className="text-2xl font-bold text-cyan-100 mb-6">Recent Activity</h2>
         {recentActivities.length === 0 ? (
           <div className="text-center py-12">
-            <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-              <FileText className="text-gray-400" size={32} />
+            <div className="w-16 h-16 bg-cyan-400 bg-opacity-10 rounded-full flex items-center justify-center mx-auto mb-4 border border-cyan-500/30">
+              <FileText className="text-cyan-400" size={32} />
             </div>
-            <p className="text-gray-500 text-lg">No recent activity</p>
+            <p className="text-cyan-300 text-lg">No recent activity</p>
           </div>
         ) : (
           <div className="space-y-4">
             {recentActivities.map((activity) => (
-              <div key={activity.id} className="flex items-start gap-4 pb-4 border-b-2 border-gray-100 last:border-0 hover:bg-gray-50 -mx-4 px-4 py-3 rounded-lg transition-all">
-                <div className="w-3 h-3 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-full mt-2 flex-shrink-0"></div>
+              <div key={activity.id} className="flex items-start gap-4 pb-4 border-b-2 border-cyan-500/20 last:border-0 hover:bg-slate-700/50 -mx-4 px-4 py-3 rounded-lg transition-all">
+                <div className="w-3 h-3 bg-gradient-to-r from-cyan-400 to-teal-400 rounded-full mt-2 flex-shrink-0 shadow-lg shadow-cyan-500/50"></div>
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm text-gray-900">
-                    <span className="font-bold">{activity.contact?.full_name || 'Unknown'}</span>
-                    {activity.contact?.company && <span className="text-gray-600"> from {activity.contact.company}</span>}
+                  <p className="text-sm text-cyan-100">
+                    <span className="font-bold text-cyan-200">{activity.contact?.full_name || 'Unknown'}</span>
+                    {activity.contact?.company && <span className="text-cyan-300"> from {activity.contact.company}</span>}
                   </p>
-                  <p className="text-sm text-gray-600 mt-1">{activity.content}</p>
-                  <p className="text-xs text-gray-500 mt-2 font-medium">{formatDate(activity.created_at)}</p>
+                  <p className="text-sm text-cyan-400 mt-1">{activity.content}</p>
+                  <p className="text-xs text-cyan-500 mt-2 font-medium">{formatDate(activity.created_at)}</p>
                 </div>
               </div>
             ))}

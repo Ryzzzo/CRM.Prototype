@@ -106,12 +106,12 @@ export default function ContactDetailModal({ contact, onClose, onEdit, onDelete,
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50 backdrop-blur-sm">
-      <div className="bg-white rounded-2xl max-w-6xl w-full max-h-[90vh] overflow-y-auto shadow-2xl">
-        <div className="sticky top-0 gradient-primary px-6 py-6 flex items-center justify-between rounded-t-2xl z-10">
+    <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center p-4 z-50 backdrop-blur-sm">
+      <div className="bg-slate-900 rounded-2xl max-w-6xl w-full max-h-[90vh] overflow-y-auto shadow-2xl border-2 border-cyan-500/40">
+        <div className="sticky top-0 gradient-cosmic px-6 py-6 flex items-center justify-between rounded-t-2xl z-10 border-b border-cyan-500/30">
           <div>
-            <h2 className="text-3xl font-bold text-white">{currentContact.full_name}</h2>
-            <p className="text-indigo-100 mt-1">{currentContact.company}</p>
+            <h2 className="text-3xl font-bold text-cyan-100">{currentContact.full_name}</h2>
+            <p className="text-cyan-300 mt-1">{currentContact.company}</p>
           </div>
           <button
             onClick={onClose}
@@ -131,15 +131,15 @@ export default function ContactDetailModal({ contact, onClose, onEdit, onDelete,
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             <div className="lg:col-span-1 space-y-6">
-              <div className="bg-white rounded-xl border-2 border-gray-200 p-5 card-hover">
-                <h3 className="text-sm font-bold text-gray-900 mb-4 uppercase tracking-wide">Contact Info</h3>
+              <div className="bg-slate-800 rounded-xl border-2 border-cyan-500/40 p-5 card-hover">
+                <h3 className="text-sm font-bold text-cyan-100 mb-4 uppercase tracking-wide">Contact Info</h3>
                 <div className="space-y-4">
                   {currentContact.email && (
                     <div className="flex items-start gap-3">
-                      <Mail size={18} className="text-indigo-600 mt-0.5" />
+                      <Mail size={18} className="text-cyan-400 mt-0.5" />
                       <div>
-                        <p className="text-xs text-gray-500 mb-0.5">Email</p>
-                        <a href={`mailto:${currentContact.email}`} className="text-sm text-gray-900 hover:text-indigo-600 transition-colors">
+                        <p className="text-xs text-cyan-400 mb-0.5">Email</p>
+                        <a href={`mailto:${currentContact.email}`} className="text-sm text-cyan-100 hover:text-cyan-300 transition-colors">
                           {currentContact.email}
                         </a>
                       </div>
@@ -147,34 +147,34 @@ export default function ContactDetailModal({ contact, onClose, onEdit, onDelete,
                   )}
                   {currentContact.phone && (
                     <div className="flex items-start gap-3">
-                      <Phone size={18} className="text-indigo-600 mt-0.5" />
+                      <Phone size={18} className="text-cyan-400 mt-0.5" />
                       <div>
-                        <p className="text-xs text-gray-500 mb-0.5">Phone</p>
-                        <a href={`tel:${currentContact.phone}`} className="text-sm text-gray-900 hover:text-indigo-600 transition-colors">
+                        <p className="text-xs text-cyan-400 mb-0.5">Phone</p>
+                        <a href={`tel:${currentContact.phone}`} className="text-sm text-cyan-100 hover:text-cyan-300 transition-colors">
                           {currentContact.phone}
                         </a>
                       </div>
                     </div>
                   )}
                   <div className="flex items-start gap-3">
-                    <Calendar size={18} className="text-indigo-600 mt-0.5" />
+                    <Calendar size={18} className="text-cyan-400 mt-0.5" />
                     <div>
-                      <p className="text-xs text-gray-500 mb-0.5">Last Contact</p>
-                      <p className="text-sm text-gray-900">{formatDate(currentContact.last_contact_date)}</p>
+                      <p className="text-xs text-cyan-400 mb-0.5">Last Contact</p>
+                      <p className="text-sm text-cyan-100">{formatDate(currentContact.last_contact_date)}</p>
                     </div>
                   </div>
                 </div>
               </div>
 
-              <div className="bg-white rounded-xl border-2 border-gray-200 p-5 card-hover">
-                <h3 className="text-sm font-bold text-gray-900 mb-4 uppercase tracking-wide">Status & Tags</h3>
+              <div className="bg-slate-800 rounded-xl border-2 border-cyan-500/40 p-5 card-hover">
+                <h3 className="text-sm font-bold text-cyan-100 mb-4 uppercase tracking-wide">Status & Tags</h3>
                 <div className="space-y-4">
                   <div>
-                    <p className="text-xs text-gray-500 mb-2">Pipeline Status</p>
+                    <p className="text-xs text-cyan-400 mb-2">Pipeline Status</p>
                     <select
                       value={currentContact.status}
                       onChange={(e) => handleStatusChange(e.target.value)}
-                      className="w-full px-3 py-2 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all"
+                      className="w-full px-3 py-2 bg-slate-900 border-2 border-cyan-500/40 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-cyan-400 transition-all text-cyan-100"
                     >
                       <option>Lead</option>
                       <option>Contacted</option>
@@ -184,19 +184,19 @@ export default function ContactDetailModal({ contact, onClose, onEdit, onDelete,
                     </select>
                   </div>
                   <div>
-                    <p className="text-xs text-gray-500 mb-2">Tags</p>
+                    <p className="text-xs text-cyan-400 mb-2">Tags</p>
                     <div className="flex flex-wrap gap-2">
                       {currentContact.tags && currentContact.tags.length > 0 ? (
                         currentContact.tags.map((tag, index) => (
                           <span
                             key={index}
-                            className="px-3 py-1 bg-gradient-to-r from-indigo-100 to-purple-100 text-indigo-700 rounded-full text-xs font-medium"
+                            className="px-3 py-1 bg-gradient-to-r from-cyan-500/30 to-teal-500/30 text-cyan-100 rounded-full text-xs font-medium border border-cyan-500/40"
                           >
                             {tag}
                           </span>
                         ))
                       ) : (
-                        <span className="text-sm text-gray-500">No tags</span>
+                        <span className="text-sm text-cyan-400">No tags</span>
                       )}
                     </div>
                   </div>
@@ -204,29 +204,29 @@ export default function ContactDetailModal({ contact, onClose, onEdit, onDelete,
               </div>
 
               {currentContact.notes && (
-                <div className="bg-gradient-to-br from-amber-50 to-orange-50 rounded-xl border-2 border-amber-200 p-5">
-                  <h3 className="text-sm font-bold text-gray-900 mb-3 uppercase tracking-wide flex items-center gap-2">
-                    <MessageSquare size={16} className="text-amber-600" />
+                <div className="bg-gradient-to-br from-cyan-900/30 to-teal-900/30 rounded-xl border-2 border-cyan-500/40 p-5">
+                  <h3 className="text-sm font-bold text-cyan-100 mb-3 uppercase tracking-wide flex items-center gap-2">
+                    <MessageSquare size={16} className="text-cyan-400" />
                     General Notes
                   </h3>
-                  <p className="text-sm text-gray-900 whitespace-pre-wrap">{currentContact.notes}</p>
+                  <p className="text-sm text-cyan-200 whitespace-pre-wrap">{currentContact.notes}</p>
                 </div>
               )}
             </div>
 
             <div className="lg:col-span-2 space-y-6">
-              <div className="bg-white rounded-xl border-2 border-gray-200 p-5">
-                <h3 className="text-lg font-bold text-gray-900 mb-4">Activity Timeline</h3>
+              <div className="bg-slate-800 rounded-xl border-2 border-cyan-500/40 p-5">
+                <h3 className="text-lg font-bold text-cyan-100 mb-4">Activity Timeline</h3>
                 <div className="space-y-3 max-h-64 overflow-y-auto">
                   {activities.length === 0 ? (
-                    <p className="text-sm text-gray-500 text-center py-8">No activity yet</p>
+                    <p className="text-sm text-cyan-400 text-center py-8">No activity yet</p>
                   ) : (
                     activities.map((activity) => (
-                      <div key={activity.id} className="flex gap-3 pb-3 border-b border-gray-100 last:border-0">
+                      <div key={activity.id} className="flex gap-3 pb-3 border-b border-cyan-500/20 last:border-0">
                         <span className="text-xl">{getActivityIcon(activity.activity_type)}</span>
                         <div className="flex-1">
-                          <p className="text-sm text-gray-900">{activity.content}</p>
-                          <p className="text-xs text-gray-500 mt-1">{formatDate(activity.created_at)}</p>
+                          <p className="text-sm text-cyan-100">{activity.content}</p>
+                          <p className="text-xs text-cyan-400 mt-1">{formatDate(activity.created_at)}</p>
                         </div>
                       </div>
                     ))
@@ -234,20 +234,20 @@ export default function ContactDetailModal({ contact, onClose, onEdit, onDelete,
                 </div>
               </div>
 
-              <div ref={tasksRef} className="bg-white rounded-xl border-2 border-gray-200 p-5">
+              <div ref={tasksRef} className="bg-slate-800 rounded-xl border-2 border-cyan-500/40 p-5">
                 <TaskSection contactId={contact.id} onUpdate={() => { loadActivities(); onUpdate(); }} />
               </div>
 
-              <div ref={notesRef} className="bg-white rounded-xl border-2 border-gray-200 p-5">
+              <div ref={notesRef} className="bg-slate-800 rounded-xl border-2 border-cyan-500/40 p-5">
                 <NotesSection contactId={contact.id} onUpdate={() => { loadActivities(); onUpdate(); }} />
               </div>
             </div>
           </div>
 
-          <div className="flex gap-3 pt-4 border-t-2 border-gray-200">
+          <div className="flex gap-3 pt-4 border-t-2 border-cyan-500/40">
             <button
               onClick={() => onEdit(currentContact)}
-              className="flex items-center gap-2 gradient-button text-white px-6 py-3 rounded-xl font-medium"
+              className="flex items-center gap-2 gradient-button text-white px-6 py-3 rounded-xl font-medium shadow-lg shadow-cyan-500/30"
             >
               <Edit2 size={18} />
               Edit Contact
@@ -258,7 +258,7 @@ export default function ContactDetailModal({ contact, onClose, onEdit, onDelete,
                   onDelete(currentContact);
                 }
               }}
-              className="flex items-center gap-2 px-6 py-3 border-2 border-red-300 text-red-600 rounded-xl hover:bg-red-50 transition-all font-medium"
+              className="flex items-center gap-2 px-6 py-3 border-2 border-red-500/60 text-red-400 rounded-xl hover:bg-red-500/20 transition-all font-medium"
             >
               <Trash2 size={18} />
               Delete
