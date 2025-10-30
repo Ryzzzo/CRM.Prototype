@@ -23,7 +23,7 @@ export default function ContactsPage({ onViewContact, initialStatusFilter = 'All
   const [sortBy, setSortBy] = useState<'name' | 'company' | 'date' | 'status'>('date');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
   const [selectedContacts, setSelectedContacts] = useState<Set<string>>(new Set());
-  const itemsPerPage = 10;
+  const [itemsPerPage, setItemsPerPage] = useState<number | 'all'>(10);
 
   useEffect(() => {
     setStatusFilter(initialStatusFilter);
@@ -179,10 +179,26 @@ export default function ContactsPage({ onViewContact, initialStatusFilter = 'All
   };
 
   const toggleSelectAll = () => {
-    if (selectedContacts.size === currentContacts.length) {
+    if (selectedContacts.size === filteredContacts.length) {
       setSelectedContacts(new Set());
     } else {
-      setSelectedContacts(new Set(currentContacts.map(c => c.id)));
+      setSelectedContacts(new Set(filteredContacts.map(c => c.id)));
+    }
+  };
+
+  const isPageFullySelected = () => {
+    return currentContacts.length > 0 && currentContacts.every(c => selectedContacts.has(c.id));
+  };
+
+  const toggleSelectPage = () => {
+    if (isPageFullySelected()) {
+      const newSelected = new Set(selectedContacts);
+      currentContacts.forEach(c => newSelected.delete(c.id));
+      setSelectedContacts(newSelected);
+    } else {
+      const newSelected = new Set(selectedContacts);
+      currentContacts.forEach(c => newSelected.add(c.id));
+      setSelectedContacts(newSelected);
     }
   };
 
@@ -229,9 +245,9 @@ export default function ContactsPage({ onViewContact, initialStatusFilter = 'All
     document.body.removeChild(link);
   };
 
-  const totalPages = Math.ceil(filteredContacts.length / itemsPerPage);
-  const startIndex = (currentPage - 1) * itemsPerPage;
-  const endIndex = startIndex + itemsPerPage;
+  const totalPages = itemsPerPage === 'all' ? 1 : Math.ceil(filteredContacts.length / itemsPerPage);
+  const startIndex = itemsPerPage === 'all' ? 0 : (currentPage - 1) * itemsPerPage;
+  const endIndex = itemsPerPage === 'all' ? filteredContacts.length : startIndex + itemsPerPage;
   const currentContacts = filteredContacts.slice(startIndex, endIndex);
 
   if (loading) {
@@ -245,22 +261,42 @@ export default function ContactsPage({ onViewContact, initialStatusFilter = 'All
 
   return (
     <div className="space-y-6">
-      <div className="flex justify-between items-start">
+      <div className="flex justify-between items-start gap-4">
         <div>
           <h1 className="text-4xl font-bold bg-gradient-to-r from-cyan-400 to-emerald-400 bg-clip-text text-transparent">
             Contacts
           </h1>
           <p className="text-cyan-100 mt-1">Manage your contacts and relationships</p>
+          {selectedContacts.size > 0 && (
+            <p className="text-cyan-300 text-sm mt-2">
+              {selectedContacts.size} of {filteredContacts.length} contacts selected
+            </p>
+          )}
         </div>
-        {selectedContacts.size > 0 && (
-          <button
-            onClick={exportToCSV}
-            className="flex items-center gap-2 bg-gradient-to-r from-emerald-500 to-teal-500 text-white px-6 py-3 rounded-xl font-medium shadow-lg shadow-emerald-500/30 hover:shadow-emerald-500/50 transition-all"
-          >
-            <Download size={20} />
-            Export {selectedContacts.size} Selected
-          </button>
-        )}
+        <div className="flex gap-2">
+          {filteredContacts.length > 0 && (
+            <button
+              onClick={toggleSelectAll}
+              className={`flex items-center gap-2 px-4 py-3 rounded-xl font-medium transition-all ${
+                selectedContacts.size === filteredContacts.length
+                  ? 'bg-cyan-500 text-white shadow-lg shadow-cyan-500/30'
+                  : 'bg-slate-700 text-cyan-100 hover:bg-slate-600'
+              }`}
+            >
+              <CheckSquare size={20} />
+              {selectedContacts.size === filteredContacts.length ? 'Deselect All' : 'Select All'}
+            </button>
+          )}
+          {selectedContacts.size > 0 && (
+            <button
+              onClick={exportToCSV}
+              className="flex items-center gap-2 bg-gradient-to-r from-emerald-500 to-teal-500 text-white px-6 py-3 rounded-xl font-medium shadow-lg shadow-emerald-500/30 hover:shadow-emerald-500/50 transition-all"
+            >
+              <Download size={20} />
+              Export ({selectedContacts.size})
+            </button>
+          )}
+        </div>
       </div>
 
       <div className="bg-slate-800 p-6 rounded-2xl shadow-2xl border-2 border-cyan-500/40 shadow-cyan-500/10">
@@ -412,9 +448,10 @@ export default function ContactsPage({ onViewContact, initialStatusFilter = 'All
                 <th className="py-4 px-4">
                   <input
                     type="checkbox"
-                    checked={selectedContacts.size === currentContacts.length && currentContacts.length > 0}
-                    onChange={toggleSelectAll}
+                    checked={isPageFullySelected()}
+                    onChange={toggleSelectPage}
                     className="w-5 h-5 rounded border-2 border-cyan-400 bg-slate-900 text-cyan-500 focus:ring-2 focus:ring-cyan-500 cursor-pointer"
+                    title={isPageFullySelected() ? 'Deselect page' : 'Select page'}
                   />
                 </th>
                 <th className="text-left py-4 px-4 text-sm font-bold text-cyan-100 uppercase tracking-wide">Name</th>
@@ -469,26 +506,50 @@ export default function ContactsPage({ onViewContact, initialStatusFilter = 'All
           </table>
         </div>
 
-        <div className="flex items-center justify-between mt-6 pt-4 border-t-2 border-cyan-500/40">
-          <p className="text-sm font-medium text-cyan-200">
-            Showing {startIndex + 1}-{Math.min(endIndex, filteredContacts.length)} of {filteredContacts.length}
-          </p>
-          <div className="flex gap-2">
-            <button
-              onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
-              disabled={currentPage === 1}
-              className="p-2 border-2 border-cyan-500/40 rounded-xl hover:bg-cyan-400/20 hover:border-cyan-400 disabled:opacity-50 disabled:cursor-not-allowed transition-all text-cyan-300"
-            >
-              <ChevronLeft size={20} />
-            </button>
-            <button
-              onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
-              disabled={currentPage === totalPages || totalPages === 0}
-              className="p-2 border-2 border-cyan-500/40 rounded-xl hover:bg-cyan-400/20 hover:border-cyan-400 disabled:opacity-50 disabled:cursor-not-allowed transition-all text-cyan-300"
-            >
-              <ChevronRight size={20} />
-            </button>
+        <div className="flex flex-col sm:flex-row items-center justify-between mt-6 pt-4 border-t-2 border-cyan-500/40 gap-4">
+          <div className="flex items-center gap-4">
+            <p className="text-sm font-medium text-cyan-200">
+              Showing {startIndex + 1}-{Math.min(endIndex, filteredContacts.length)} of {filteredContacts.length}
+            </p>
+            <div className="flex items-center gap-2">
+              <span className="text-sm text-cyan-300">Per page:</span>
+              <select
+                value={itemsPerPage}
+                onChange={(e) => {
+                  const value = e.target.value === 'all' ? 'all' : parseInt(e.target.value);
+                  setItemsPerPage(value);
+                  setCurrentPage(1);
+                }}
+                className="px-3 py-1.5 bg-slate-900 border-2 border-cyan-500/40 rounded-lg text-cyan-100 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-400 transition-all"
+              >
+                <option value={10}>10</option>
+                <option value={20}>20</option>
+                <option value={50}>50</option>
+                <option value="all">All</option>
+              </select>
+            </div>
           </div>
+          {itemsPerPage !== 'all' && (
+            <div className="flex gap-2">
+              <button
+                onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+                disabled={currentPage === 1}
+                className="p-2 border-2 border-cyan-500/40 rounded-xl hover:bg-cyan-400/20 hover:border-cyan-400 disabled:opacity-50 disabled:cursor-not-allowed transition-all text-cyan-300"
+              >
+                <ChevronLeft size={20} />
+              </button>
+              <div className="flex items-center px-4 text-cyan-200 text-sm font-medium">
+                Page {currentPage} of {totalPages}
+              </div>
+              <button
+                onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
+                disabled={currentPage === totalPages || totalPages === 0}
+                className="p-2 border-2 border-cyan-500/40 rounded-xl hover:bg-cyan-400/20 hover:border-cyan-400 disabled:opacity-50 disabled:cursor-not-allowed transition-all text-cyan-300"
+              >
+                <ChevronRight size={20} />
+              </button>
+            </div>
+          )}
         </div>
       </div>
     </div>
