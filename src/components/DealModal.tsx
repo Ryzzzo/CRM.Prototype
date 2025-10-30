@@ -47,14 +47,34 @@ export default function DealModal({ deal, onClose, onSave }: DealModalProps) {
     setSaving(true);
 
     if (deal) {
-      await supabase
+      const updatePayload: any = {
+        name: dealData.name.trim(),
+        contact_id: dealData.contact_id,
+        value: Number(dealData.value) || 0,
+        stage: dealData.stage,
+        probability: dealData.probability,
+        updated_at: new Date().toISOString(),
+      };
+
+      if (dealData.expected_close_date) {
+        updatePayload.expected_close_date = dealData.expected_close_date;
+      }
+
+      if (dealData.description.trim()) {
+        updatePayload.description = dealData.description.trim();
+      }
+
+      const { error } = await supabase
         .from('deals')
-        .update({
-          ...dealData,
-          value: Number(dealData.value) || 0,
-          updated_at: new Date().toISOString(),
-        })
+        .update(updatePayload)
         .eq('id', deal.id);
+
+      if (error) {
+        console.error('Error updating deal:', error);
+        alert(`Failed to update deal: ${error.message}`);
+        setSaving(false);
+        return;
+      }
 
       await supabase.from('contact_activities').insert({
         contact_id: dealData.contact_id,
@@ -62,20 +82,40 @@ export default function DealModal({ deal, onClose, onSave }: DealModalProps) {
         content: `Deal "${dealData.name}" updated`,
       });
     } else {
-      const { data: newDeal } = await supabase
+      const dealPayload: any = {
+        name: dealData.name.trim(),
+        contact_id: dealData.contact_id,
+        value: Number(dealData.value) || 0,
+        stage: dealData.stage,
+        probability: dealData.probability,
+      };
+
+      if (dealData.expected_close_date) {
+        dealPayload.expected_close_date = dealData.expected_close_date;
+      }
+
+      if (dealData.description.trim()) {
+        dealPayload.description = dealData.description.trim();
+      }
+
+      const { data: newDeal, error } = await supabase
         .from('deals')
-        .insert([{
-          ...dealData,
-          value: Number(dealData.value) || 0,
-        }])
+        .insert([dealPayload])
         .select()
         .single();
+
+      if (error) {
+        console.error('Error creating deal:', error);
+        alert(`Failed to create deal: ${error.message}`);
+        setSaving(false);
+        return;
+      }
 
       if (newDeal) {
         await supabase.from('contact_activities').insert({
           contact_id: dealData.contact_id,
           activity_type: 'created',
-          content: `Deal created: ${dealData.name} (${new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(Number(dealData.value))})`,
+          content: `Deal created: ${dealData.name} (${new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(Number(dealData.value) || 0)})`,
         });
       }
     }
