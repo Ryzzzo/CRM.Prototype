@@ -258,7 +258,7 @@ export default function ContactDetailModal({ contact, onClose, onEdit, onDelete,
                   onDelete(currentContact);
                 }
               }}
-              className="flex items-center gap-2 px-6 py-3 border-2 border-red-500/60 text-red-400 rounded-xl hover:bg-red-500/20 transition-all font-medium"
+              className="flex items-center gap-2 px-6 py-3 bg-slate-900 border-2 border-red-500 text-red-400 rounded-xl hover:bg-red-500 hover:text-white transition-all font-medium"
             >
               <Trash2 size={18} />
               Delete

@@ -353,7 +353,7 @@ export default function ContactDetailPage({
                     onDelete(contact);
                   }
                 }}
-                className="flex items-center gap-2 bg-red-500/20 text-red-400 px-4 py-2 rounded-xl hover:bg-red-500/30 transition-all border border-red-500/40"
+                className="flex items-center gap-2 bg-slate-900 text-red-400 px-4 py-2 rounded-xl hover:bg-red-500 hover:text-white transition-all border-2 border-red-500"
               >
                 <Trash2 size={18} />
                 Delete
