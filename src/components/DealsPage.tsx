@@ -182,30 +182,30 @@ export default function DealsPage({ onViewContact }: DealsPageProps) {
         </div>
       </div>
 
-      <div className="bg-slate-800 p-6 rounded-2xl border-2 border-cyan-500/40 shadow-xl overflow-x-auto">
-        <div className="flex gap-4 min-w-max pb-2">
+      <div className="bg-slate-800 p-4 lg:p-6 rounded-2xl border-2 border-cyan-500/40 shadow-xl">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-3 lg:gap-4">
           {STAGES.map(stage => (
             <div
               key={stage}
               onDragOver={handleDragOver}
               onDrop={() => handleDrop(stage)}
-              className={`flex-shrink-0 w-80 bg-slate-900 rounded-xl border-2 ${getStageColor(stage)} p-4`}
+              className={`bg-slate-900 rounded-xl border-2 ${getStageColor(stage)} p-3`}
             >
-              <div className="mb-4">
-                <div className="flex items-center justify-between mb-2">
-                  <h3 className="font-bold text-cyan-100 text-lg">{stage}</h3>
-                  <span className="text-xs bg-cyan-500/20 text-cyan-400 px-2 py-1 rounded-full font-bold">
+              <div className="mb-3">
+                <div className="flex items-center justify-between mb-1.5">
+                  <h3 className="font-bold text-cyan-100 text-sm lg:text-base truncate pr-2">{stage}</h3>
+                  <span className="text-xs bg-cyan-500/20 text-cyan-400 px-2 py-0.5 rounded-full font-bold flex-shrink-0">
                     {getStageDeals(stage).length}
                   </span>
                 </div>
-                <p className="text-sm text-cyan-400 font-medium">
+                <p className="text-xs lg:text-sm text-cyan-400 font-medium truncate">
                   {formatCurrency(getStageValue(stage))}
                 </p>
               </div>
 
-              <div className="space-y-3 max-h-[600px] overflow-y-auto custom-scrollbar pr-2">
+              <div className="space-y-2 max-h-[calc(100vh-450px)] min-h-[300px] overflow-y-auto custom-scrollbar pr-1">
                 {getStageDeals(stage).length === 0 ? (
-                  <div className="text-center py-8 text-cyan-500 text-sm">
+                  <div className="text-center py-8 text-cyan-500 text-xs">
                     No deals in this stage
                   </div>
                 ) : (
