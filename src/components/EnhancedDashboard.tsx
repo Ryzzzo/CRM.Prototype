@@ -11,6 +11,7 @@ interface DashboardProps {
   onFilterByStatus: (status: string) => void;
   onViewContact?: (contact: Contact) => void;
   onNavigateToContacts?: () => void;
+  onNavigateToContactsWithTasks?: () => void;
 }
 
 interface Stats {
@@ -25,7 +26,7 @@ interface Stats {
   activeLeads: number;
 }
 
-export default function EnhancedDashboard({ onAddContact, onFilterByStatus, onViewContact, onNavigateToContacts }: DashboardProps) {
+export default function EnhancedDashboard({ onAddContact, onFilterByStatus, onViewContact, onNavigateToContacts, onNavigateToContactsWithTasks }: DashboardProps) {
   const [stats, setStats] = useState<Stats>({
     total: 0,
     newLeads: 0,
@@ -467,7 +468,7 @@ export default function EnhancedDashboard({ onAddContact, onFilterByStatus, onVi
         </button>
 
         <button
-          onClick={() => onFilterByStatus('Lead')}
+          onClick={() => onFilterByStatus('Active')}
           className="bg-slate-800 p-6 rounded-xl shadow-lg border-2 border-cyan-500/40 card-hover text-left transition-all hover:scale-105 hover:border-cyan-400"
         >
           <div className="flex items-center justify-between">
@@ -483,12 +484,7 @@ export default function EnhancedDashboard({ onAddContact, onFilterByStatus, onVi
         </button>
 
         <button
-          onClick={() => {
-            const tasksSection = document.getElementById('tasks-section');
-            if (tasksSection) {
-              tasksSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
-            }
-          }}
+          onClick={onNavigateToContactsWithTasks}
           className="bg-slate-800 p-6 rounded-xl shadow-lg border-2 border-teal-500/40 card-hover text-left transition-all hover:scale-105 hover:border-teal-400"
         >
           <div className="flex items-center justify-between">

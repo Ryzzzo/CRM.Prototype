@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Search, Filter, ChevronLeft, ChevronRight, X, Calendar, FileText, CheckSquare, ArrowUpDown } from 'lucide-react';
+import { Search, Filter, ChevronLeft, ChevronRight, X, Calendar, FileText, CheckSquare, ArrowUpDown, Download } from 'lucide-react';
 import { supabase, Contact, Task } from '../lib/supabase';
 
 interface ContactsPageProps {
@@ -22,6 +22,7 @@ export default function ContactsPage({ onViewContact, initialStatusFilter = 'All
   const [tasksData, setTasksData] = useState<Task[]>([]);
   const [sortBy, setSortBy] = useState<'name' | 'company' | 'date' | 'status'>('date');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
+  const [selectedContacts, setSelectedContacts] = useState<Set<string>>(new Set());
   const itemsPerPage = 10;
 
   useEffect(() => {
@@ -72,7 +73,20 @@ export default function ContactsPage({ onViewContact, initialStatusFilter = 'All
     }
 
     if (statusFilter !== 'All') {
-      filtered = filtered.filter(contact => contact.status === statusFilter);
+      if (statusFilter === 'Active') {
+        filtered = filtered.filter(contact =>
+          contact.status === 'Lead' ||
+          contact.status === 'Contacted' ||
+          contact.status === 'Proposal'
+        );
+      } else if (statusFilter === 'HasTasks') {
+        const contactsWithTasks = tasksData
+          .filter(task => !task.completed)
+          .map(task => task.contact_id);
+        filtered = filtered.filter(contact => contactsWithTasks.includes(contact.id));
+      } else {
+        filtered = filtered.filter(contact => contact.status === statusFilter);
+      }
     }
 
     if (dateFrom) {
@@ -164,6 +178,57 @@ export default function ContactsPage({ onViewContact, initialStatusFilter = 'All
     }
   };
 
+  const toggleSelectAll = () => {
+    if (selectedContacts.size === currentContacts.length) {
+      setSelectedContacts(new Set());
+    } else {
+      setSelectedContacts(new Set(currentContacts.map(c => c.id)));
+    }
+  };
+
+  const toggleSelectContact = (contactId: string) => {
+    const newSelected = new Set(selectedContacts);
+    if (newSelected.has(contactId)) {
+      newSelected.delete(contactId);
+    } else {
+      newSelected.add(contactId);
+    }
+    setSelectedContacts(newSelected);
+  };
+
+  const exportToCSV = () => {
+    const contactsToExport = filteredContacts.filter(c => selectedContacts.has(c.id));
+    if (contactsToExport.length === 0) {
+      alert('Please select contacts to export');
+      return;
+    }
+
+    const headers = ['Name', 'Email', 'Phone', 'Company', 'Status', 'Last Contact Date'];
+    const csvContent = [
+      headers.join(','),
+      ...contactsToExport.map(contact =>
+        [
+          `"${contact.full_name}"`,
+          `"${contact.email || ''}"`,
+          `"${contact.phone || ''}"`,
+          `"${contact.company || ''}"`,
+          `"${contact.status}"`,
+          `"${formatDate(contact.last_contact_date)}"`
+        ].join(',')
+      )
+    ].join('\n');
+
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    const url = URL.createObjectURL(blob);
+    link.setAttribute('href', url);
+    link.setAttribute('download', `contacts_export_${new Date().toISOString().split('T')[0]}.csv`);
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   const totalPages = Math.ceil(filteredContacts.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
@@ -180,11 +245,22 @@ export default function ContactsPage({ onViewContact, initialStatusFilter = 'All
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-4xl font-bold bg-gradient-to-r from-cyan-400 to-emerald-400 bg-clip-text text-transparent">
-          Contacts
-        </h1>
-        <p className="text-cyan-100 mt-1">Manage your contacts and relationships</p>
+      <div className="flex justify-between items-start">
+        <div>
+          <h1 className="text-4xl font-bold bg-gradient-to-r from-cyan-400 to-emerald-400 bg-clip-text text-transparent">
+            Contacts
+          </h1>
+          <p className="text-cyan-100 mt-1">Manage your contacts and relationships</p>
+        </div>
+        {selectedContacts.size > 0 && (
+          <button
+            onClick={exportToCSV}
+            className="flex items-center gap-2 bg-gradient-to-r from-emerald-500 to-teal-500 text-white px-6 py-3 rounded-xl font-medium shadow-lg shadow-emerald-500/30 hover:shadow-emerald-500/50 transition-all"
+          >
+            <Download size={20} />
+            Export {selectedContacts.size} Selected
+          </button>
+        )}
       </div>
 
       <div className="bg-slate-800 p-6 rounded-2xl shadow-2xl border-2 border-cyan-500/40 shadow-cyan-500/10">
@@ -333,6 +409,14 @@ export default function ContactsPage({ onViewContact, initialStatusFilter = 'All
           <table className="w-full">
             <thead>
               <tr className="border-b-2 border-cyan-500/40 bg-gradient-to-r from-teal-900 to-cyan-900">
+                <th className="py-4 px-4">
+                  <input
+                    type="checkbox"
+                    checked={selectedContacts.size === currentContacts.length && currentContacts.length > 0}
+                    onChange={toggleSelectAll}
+                    className="w-5 h-5 rounded border-2 border-cyan-400 bg-slate-900 text-cyan-500 focus:ring-2 focus:ring-cyan-500 cursor-pointer"
+                  />
+                </th>
                 <th className="text-left py-4 px-4 text-sm font-bold text-cyan-100 uppercase tracking-wide">Name</th>
                 <th className="text-left py-4 px-4 text-sm font-bold text-cyan-100 uppercase tracking-wide">Company</th>
                 <th className="text-left py-4 px-4 text-sm font-bold text-cyan-100 uppercase tracking-wide">Email</th>
@@ -344,7 +428,7 @@ export default function ContactsPage({ onViewContact, initialStatusFilter = 'All
             <tbody>
               {currentContacts.length === 0 ? (
                 <tr>
-                  <td colSpan={6} className="text-center py-12 text-cyan-400">
+                  <td colSpan={7} className="text-center py-12 text-cyan-400">
                     No contacts found
                   </td>
                 </tr>
@@ -352,21 +436,32 @@ export default function ContactsPage({ onViewContact, initialStatusFilter = 'All
                 currentContacts.map((contact, index) => (
                   <tr
                     key={contact.id}
-                    onClick={() => onViewContact(contact)}
-                    className={`border-b border-cyan-500/20 cursor-pointer table-row-hover ${index % 2 === 0 ? 'bg-slate-900' : 'bg-slate-900/50'}`}
+                    className={`border-b border-cyan-500/20 ${index % 2 === 0 ? 'bg-slate-900' : 'bg-slate-900/50'}`}
                   >
                     <td className="py-4 px-4">
+                      <input
+                        type="checkbox"
+                        checked={selectedContacts.has(contact.id)}
+                        onChange={(e) => {
+                          e.stopPropagation();
+                          toggleSelectContact(contact.id);
+                        }}
+                        onClick={(e) => e.stopPropagation()}
+                        className="w-5 h-5 rounded border-2 border-cyan-500/40 bg-slate-900 text-cyan-500 focus:ring-2 focus:ring-cyan-500 cursor-pointer"
+                      />
+                    </td>
+                    <td className="py-4 px-4 cursor-pointer hover:bg-cyan-500/10 transition-colors" onClick={() => onViewContact(contact)}>
                       <p className="font-bold text-cyan-100">{contact.full_name}</p>
                     </td>
-                    <td className="py-4 px-4 text-cyan-300">{contact.company || '-'}</td>
-                    <td className="py-4 px-4 text-cyan-300">{contact.email || '-'}</td>
-                    <td className="py-4 px-4 text-cyan-300">{contact.phone || '-'}</td>
-                    <td className="py-4 px-4">
+                    <td className="py-4 px-4 text-cyan-300 cursor-pointer hover:bg-cyan-500/10 transition-colors" onClick={() => onViewContact(contact)}>{contact.company || '-'}</td>
+                    <td className="py-4 px-4 text-cyan-300 cursor-pointer hover:bg-cyan-500/10 transition-colors" onClick={() => onViewContact(contact)}>{contact.email || '-'}</td>
+                    <td className="py-4 px-4 text-cyan-300 cursor-pointer hover:bg-cyan-500/10 transition-colors" onClick={() => onViewContact(contact)}>{contact.phone || '-'}</td>
+                    <td className="py-4 px-4 cursor-pointer hover:bg-cyan-500/10 transition-colors" onClick={() => onViewContact(contact)}>
                       <span className={`px-3 py-1.5 rounded-full text-xs font-bold ${getStatusColor(contact.status)}`}>
                         {contact.status}
                       </span>
                     </td>
-                    <td className="py-4 px-4 text-cyan-300">{formatDate(contact.last_contact_date)}</td>
+                    <td className="py-4 px-4 text-cyan-300 cursor-pointer hover:bg-cyan-500/10 transition-colors" onClick={() => onViewContact(contact)}>{formatDate(contact.last_contact_date)}</td>
                   </tr>
                 ))
               )}
