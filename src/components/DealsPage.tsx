@@ -183,15 +183,15 @@ export default function DealsPage({ onViewContact }: DealsPageProps) {
       </div>
 
       <div className="bg-slate-800 p-4 lg:p-6 rounded-2xl border-2 border-cyan-500/40 shadow-xl">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-3 lg:gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-3 lg:gap-4 auto-rows-fr">
           {STAGES.map(stage => (
             <div
               key={stage}
               onDragOver={handleDragOver}
               onDrop={() => handleDrop(stage)}
-              className={`bg-slate-900 rounded-xl border-2 ${getStageColor(stage)} p-3`}
+              className={`bg-slate-900 rounded-xl border-2 ${getStageColor(stage)} p-3 flex flex-col`}
             >
-              <div className="mb-3">
+              <div className="mb-3 flex-shrink-0">
                 <div className="flex items-center justify-between mb-1.5">
                   <h3 className="font-bold text-cyan-100 text-sm lg:text-base truncate pr-2">{stage}</h3>
                   <span className="text-xs bg-cyan-500/20 text-cyan-400 px-2 py-0.5 rounded-full font-bold flex-shrink-0">
@@ -203,7 +203,7 @@ export default function DealsPage({ onViewContact }: DealsPageProps) {
                 </p>
               </div>
 
-              <div className="space-y-2 max-h-[calc(100vh-450px)] min-h-[300px] overflow-y-auto custom-scrollbar pr-1">
+              <div className="space-y-2 flex-1 overflow-y-auto custom-scrollbar pr-1 min-h-[400px]">
                 {getStageDeals(stage).length === 0 ? (
                   <div className="text-center py-8 text-cyan-500 text-xs">
                     No deals in this stage

@@ -13,7 +13,7 @@ export default function DealModal({ deal, onClose, onSave }: DealModalProps) {
   const [dealData, setDealData] = useState({
     name: deal?.name || '',
     contact_id: deal?.contact_id || '',
-    value: deal?.value || 0,
+    value: deal?.value || '',
     stage: deal?.stage || 'Lead',
     expected_close_date: deal?.expected_close_date ? deal.expected_close_date.split('T')[0] : '',
     probability: deal?.probability || 50,
@@ -51,6 +51,7 @@ export default function DealModal({ deal, onClose, onSave }: DealModalProps) {
         .from('deals')
         .update({
           ...dealData,
+          value: Number(dealData.value) || 0,
           updated_at: new Date().toISOString(),
         })
         .eq('id', deal.id);
@@ -63,7 +64,10 @@ export default function DealModal({ deal, onClose, onSave }: DealModalProps) {
     } else {
       const { data: newDeal } = await supabase
         .from('deals')
-        .insert([dealData])
+        .insert([{
+          ...dealData,
+          value: Number(dealData.value) || 0,
+        }])
         .select()
         .single();
 
@@ -142,7 +146,7 @@ export default function DealModal({ deal, onClose, onSave }: DealModalProps) {
               <input
                 type="number"
                 value={dealData.value}
-                onChange={(e) => setDealData({ ...dealData, value: Number(e.target.value) })}
+                onChange={(e) => setDealData({ ...dealData, value: e.target.value })}
                 className="w-full px-4 py-3 bg-slate-900 border-2 border-cyan-500/40 rounded-xl text-cyan-100 focus:ring-2 focus:ring-cyan-500 focus:border-cyan-400 transition-all"
                 placeholder="0"
                 min="0"
