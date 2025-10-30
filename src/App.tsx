@@ -55,6 +55,11 @@ function App() {
     setCurrentView('contacts');
   };
 
+  const handleNavigateToContacts = () => {
+    setStatusFilter('All');
+    setCurrentView('contacts');
+  };
+
   const handleUpdate = () => {
     setRefreshKey(prev => prev + 1);
   };
@@ -116,7 +121,7 @@ function App() {
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {currentView === 'dashboard' && (
-          <EnhancedDashboard key={`dashboard-${refreshKey}`} onAddContact={handleAddContact} onFilterByStatus={handleFilterByStatus} onViewContact={handleViewContact} />
+          <EnhancedDashboard key={`dashboard-${refreshKey}`} onAddContact={handleAddContact} onFilterByStatus={handleFilterByStatus} onViewContact={handleViewContact} onNavigateToContacts={handleNavigateToContacts} />
         )}
         {currentView === 'contacts' && (
           <ContactsPage key={`contacts-${refreshKey}`} onViewContact={handleViewContact} initialStatusFilter={statusFilter} />

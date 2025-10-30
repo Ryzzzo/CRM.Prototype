@@ -10,6 +10,7 @@ interface DashboardProps {
   onAddContact: () => void;
   onFilterByStatus: (status: string) => void;
   onViewContact?: (contact: Contact) => void;
+  onNavigateToContacts?: () => void;
 }
 
 interface Stats {
@@ -24,7 +25,7 @@ interface Stats {
   activeLeads: number;
 }
 
-export default function EnhancedDashboard({ onAddContact, onFilterByStatus, onViewContact }: DashboardProps) {
+export default function EnhancedDashboard({ onAddContact, onFilterByStatus, onViewContact, onNavigateToContacts }: DashboardProps) {
   const [stats, setStats] = useState<Stats>({
     total: 0,
     newLeads: 0,
@@ -40,10 +41,44 @@ export default function EnhancedDashboard({ onAddContact, onFilterByStatus, onVi
   const [loading, setLoading] = useState(true);
   const [contactGrowth, setContactGrowth] = useState<number[]>([]);
   const [tasksByPriority, setTasksByPriority] = useState({ high: 0, medium: 0, low: 0 });
+  const [growthTimeRange, setGrowthTimeRange] = useState<30 | 14 | 7 | 1>(30);
 
   useEffect(() => {
     loadDashboardData();
   }, []);
+
+  useEffect(() => {
+    if (stats.total > 0) {
+      loadContactsForGrowth();
+    }
+  }, [growthTimeRange]);
+
+  const loadContactsForGrowth = async () => {
+    const { data: contacts } = await supabase.from('contacts').select('*, created_at');
+    if (contacts) {
+      calculateGrowthData(contacts);
+    }
+  };
+
+  const calculateGrowthData = (contacts: any[]) => {
+    const days = growthTimeRange;
+    const dailyData = Array.from({ length: days }, (_, i) => {
+      const date = new Date();
+      date.setDate(date.getDate() - (days - 1 - i));
+      return contacts.filter(c => {
+        const createdDate = new Date(c.created_at);
+        return createdDate.toDateString() === date.toDateString();
+      }).length;
+    });
+
+    const cumulativeGrowth = dailyData.reduce((acc, curr, idx) => {
+      const prev = idx > 0 ? acc[idx - 1] : contacts.length - dailyData.reduce((a, b) => a + b, 0);
+      acc.push(prev + curr);
+      return acc;
+    }, [] as number[]);
+
+    setContactGrowth(cumulativeGrowth);
+  };
 
   const loadDashboardData = async () => {
     setLoading(true);
@@ -70,22 +105,7 @@ export default function EnhancedDashboard({ onAddContact, onFilterByStatus, onVi
         activeLeads,
       };
 
-      const last30Days = Array.from({ length: 30 }, (_, i) => {
-        const date = new Date();
-        date.setDate(date.getDate() - (29 - i));
-        return contacts.filter(c => {
-          const createdDate = new Date(c.created_at);
-          return createdDate.toDateString() === date.toDateString();
-        }).length;
-      });
-
-      const cumulativeGrowth = last30Days.reduce((acc, curr, idx) => {
-        const prev = idx > 0 ? acc[idx - 1] : contacts.length - last30Days.reduce((a, b) => a + b, 0);
-        acc.push(prev + curr);
-        return acc;
-      }, [] as number[]);
-
-      setContactGrowth(cumulativeGrowth);
+      calculateGrowthData(contacts);
       setStats(newStats);
     }
 
@@ -153,10 +173,20 @@ export default function EnhancedDashboard({ onAddContact, onFilterByStatus, onVi
     }
   };
 
+  const getChartLabel = () => {
+    if (growthTimeRange === 1) return 'Contact Growth (Prior Day)';
+    if (growthTimeRange === 7) return 'Contact Growth (Last 7 Days)';
+    if (growthTimeRange === 14) return 'Contact Growth (Last 14 Days)';
+    return 'Contact Growth (Last 30 Days)';
+  };
+
   const lineChartData = {
-    labels: Array.from({ length: 30 }, (_, i) => {
+    labels: Array.from({ length: growthTimeRange }, (_, i) => {
       const date = new Date();
-      date.setDate(date.getDate() - (29 - i));
+      date.setDate(date.getDate() - (growthTimeRange - 1 - i));
+      if (growthTimeRange === 1) {
+        return date.toLocaleTimeString('en-US', { hour: 'numeric', hour12: true });
+      }
       return date.getDate().toString();
     }),
     datasets: [
@@ -421,7 +451,10 @@ export default function EnhancedDashboard({ onAddContact, onFilterByStatus, onVi
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="gradient-teal-cyan p-6 rounded-xl shadow-lg shadow-cyan-500/30 card-hover border border-cyan-400/30">
+        <button
+          onClick={onNavigateToContacts}
+          className="gradient-teal-cyan p-6 rounded-xl shadow-lg shadow-cyan-500/30 card-hover border border-cyan-400/30 text-left transition-all hover:scale-105"
+        >
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm text-cyan-100 font-medium">Total Contacts</p>
@@ -431,7 +464,7 @@ export default function EnhancedDashboard({ onAddContact, onFilterByStatus, onVi
               <Users className="text-white" size={28} />
             </div>
           </div>
-        </div>
+        </button>
 
         <button
           onClick={() => onFilterByStatus('Lead')}
@@ -449,7 +482,15 @@ export default function EnhancedDashboard({ onAddContact, onFilterByStatus, onVi
           </div>
         </button>
 
-        <div className="bg-slate-800 p-6 rounded-xl shadow-lg border-2 border-teal-500/40 card-hover">
+        <button
+          onClick={() => {
+            const tasksSection = document.getElementById('tasks-section');
+            if (tasksSection) {
+              tasksSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+          }}
+          className="bg-slate-800 p-6 rounded-xl shadow-lg border-2 border-teal-500/40 card-hover text-left transition-all hover:scale-105 hover:border-teal-400"
+        >
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm text-cyan-300 font-medium">Tasks This Week</p>
@@ -459,9 +500,17 @@ export default function EnhancedDashboard({ onAddContact, onFilterByStatus, onVi
               <Calendar className="text-teal-400" size={28} />
             </div>
           </div>
-        </div>
+        </button>
 
-        <div className="bg-slate-800 p-6 rounded-xl shadow-lg border-2 border-emerald-500/40 card-hover">
+        <button
+          onClick={() => {
+            const activitySection = document.getElementById('activity-section');
+            if (activitySection) {
+              activitySection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+          }}
+          className="bg-slate-800 p-6 rounded-xl shadow-lg border-2 border-emerald-500/40 card-hover text-left transition-all hover:scale-105 hover:border-emerald-400"
+        >
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm text-cyan-300 font-medium">Recent Activity</p>
@@ -472,15 +521,59 @@ export default function EnhancedDashboard({ onAddContact, onFilterByStatus, onVi
               <Activity className="text-emerald-400" size={28} />
             </div>
           </div>
-        </div>
+        </button>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2 bg-slate-800 p-6 rounded-2xl shadow-xl border-2 border-cyan-500/40">
-          <h3 className="text-xl font-bold text-cyan-100 mb-4 flex items-center gap-2">
-            <TrendingUp className="text-cyan-400" size={20} />
-            Contact Growth (Last 30 Days)
-          </h3>
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-xl font-bold text-cyan-100 flex items-center gap-2">
+              <TrendingUp className="text-cyan-400" size={20} />
+              {getChartLabel()}
+            </h3>
+            <div className="flex gap-2">
+              <button
+                onClick={() => setGrowthTimeRange(30)}
+                className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
+                  growthTimeRange === 30
+                    ? 'bg-cyan-500 text-white shadow-lg shadow-cyan-500/30'
+                    : 'bg-slate-700 text-cyan-300 hover:bg-slate-600'
+                }`}
+              >
+                30D
+              </button>
+              <button
+                onClick={() => setGrowthTimeRange(14)}
+                className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
+                  growthTimeRange === 14
+                    ? 'bg-cyan-500 text-white shadow-lg shadow-cyan-500/30'
+                    : 'bg-slate-700 text-cyan-300 hover:bg-slate-600'
+                }`}
+              >
+                14D
+              </button>
+              <button
+                onClick={() => setGrowthTimeRange(7)}
+                className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
+                  growthTimeRange === 7
+                    ? 'bg-cyan-500 text-white shadow-lg shadow-cyan-500/30'
+                    : 'bg-slate-700 text-cyan-300 hover:bg-slate-600'
+                }`}
+              >
+                7D
+              </button>
+              <button
+                onClick={() => setGrowthTimeRange(1)}
+                className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
+                  growthTimeRange === 1
+                    ? 'bg-cyan-500 text-white shadow-lg shadow-cyan-500/30'
+                    : 'bg-slate-700 text-cyan-300 hover:bg-slate-600'
+                }`}
+              >
+                1D
+              </button>
+            </div>
+          </div>
           <div className="h-64">
             <Line data={lineChartData} options={chartOptions} />
           </div>
@@ -497,7 +590,7 @@ export default function EnhancedDashboard({ onAddContact, onFilterByStatus, onVi
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div id="tasks-section" className="grid grid-cols-1 lg:grid-cols-3 gap-6 scroll-mt-8">
         <div className="bg-slate-800 p-6 rounded-2xl shadow-xl border-2 border-cyan-500/40">
           <h3 className="text-xl font-bold text-cyan-100 mb-4 flex items-center gap-2">
             <CheckCircle className="text-cyan-400" size={20} />
@@ -508,7 +601,7 @@ export default function EnhancedDashboard({ onAddContact, onFilterByStatus, onVi
           </div>
         </div>
 
-        <div className="lg:col-span-2 bg-slate-800 p-6 rounded-2xl shadow-xl border-2 border-cyan-500/40">
+        <div id="activity-section" className="lg:col-span-2 bg-slate-800 p-6 rounded-2xl shadow-xl border-2 border-cyan-500/40 scroll-mt-8">
           <h3 className="text-xl font-bold text-cyan-100 mb-4 flex items-center gap-2">
             <Activity className="text-cyan-400" size={20} />
             Recent Activity Feed

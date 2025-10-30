@@ -89,9 +89,9 @@ export default function ContactForm({ contact, onClose, onSave }: ContactFormPro
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50 backdrop-blur-sm">
-      <div className="bg-white rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-2xl">
-        <div className="sticky top-0 gradient-primary px-6 py-6 flex items-center justify-between rounded-t-2xl">
+    <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center p-4 z-50 backdrop-blur-sm">
+      <div className="bg-slate-800 rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-2xl border-2 border-cyan-500/40">
+        <div className="sticky top-0 bg-gradient-to-r from-teal-600 to-cyan-600 px-6 py-6 flex items-center justify-between rounded-t-2xl border-b border-cyan-500/40">
           <h2 className="text-3xl font-bold text-white">
             {contact ? 'Edit Contact' : 'Add New Contact'}
           </h2>
@@ -106,8 +106,8 @@ export default function ContactForm({ contact, onClose, onSave }: ContactFormPro
         <form onSubmit={handleSubmit} className="p-8 space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label htmlFor="full_name" className="block text-sm font-bold text-gray-900 mb-2 uppercase tracking-wide">
-                Full Name <span className="text-red-500">*</span>
+              <label htmlFor="full_name" className="block text-sm font-medium text-cyan-300 mb-2">
+                Full Name <span className="text-red-400">*</span>
               </label>
               <input
                 type="text"
@@ -115,13 +115,13 @@ export default function ContactForm({ contact, onClose, onSave }: ContactFormPro
                 required
                 value={formData.full_name}
                 onChange={(e) => setFormData({ ...formData, full_name: e.target.value })}
-                className="w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all"
+                className="w-full px-4 py-3 bg-slate-900 border-2 border-cyan-500/40 rounded-xl text-cyan-100 focus:ring-2 focus:ring-cyan-500 focus:border-cyan-400 transition-all"
                 placeholder="John Doe"
               />
             </div>
 
             <div>
-              <label htmlFor="company" className="block text-sm font-bold text-gray-900 mb-2 uppercase tracking-wide">
+              <label htmlFor="company" className="block text-sm font-medium text-cyan-300 mb-2">
                 Company
               </label>
               <input
@@ -129,13 +129,13 @@ export default function ContactForm({ contact, onClose, onSave }: ContactFormPro
                 id="company"
                 value={formData.company}
                 onChange={(e) => setFormData({ ...formData, company: e.target.value })}
-                className="w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all"
+                className="w-full px-4 py-3 bg-slate-900 border-2 border-cyan-500/40 rounded-xl text-cyan-100 focus:ring-2 focus:ring-cyan-500 focus:border-cyan-400 transition-all"
                 placeholder="Acme Inc."
               />
             </div>
 
             <div>
-              <label htmlFor="email" className="block text-sm font-bold text-gray-900 mb-2 uppercase tracking-wide">
+              <label htmlFor="email" className="block text-sm font-medium text-cyan-300 mb-2">
                 Email
               </label>
               <input
@@ -143,13 +143,13 @@ export default function ContactForm({ contact, onClose, onSave }: ContactFormPro
                 id="email"
                 value={formData.email}
                 onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                className="w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all"
+                className="w-full px-4 py-3 bg-slate-900 border-2 border-cyan-500/40 rounded-xl text-cyan-100 focus:ring-2 focus:ring-cyan-500 focus:border-cyan-400 transition-all"
                 placeholder="john@example.com"
               />
             </div>
 
             <div>
-              <label htmlFor="phone" className="block text-sm font-bold text-gray-900 mb-2 uppercase tracking-wide">
+              <label htmlFor="phone" className="block text-sm font-medium text-cyan-300 mb-2">
                 Phone
               </label>
               <input
@@ -157,13 +157,13 @@ export default function ContactForm({ contact, onClose, onSave }: ContactFormPro
                 id="phone"
                 value={formData.phone}
                 onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                className="w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all"
+                className="w-full px-4 py-3 bg-slate-900 border-2 border-cyan-500/40 rounded-xl text-cyan-100 focus:ring-2 focus:ring-cyan-500 focus:border-cyan-400 transition-all"
                 placeholder="+1 (555) 123-4567"
               />
             </div>
 
             <div>
-              <label htmlFor="status" className="block text-sm font-bold text-gray-900 mb-2 uppercase tracking-wide">
+              <label htmlFor="status" className="block text-sm font-medium text-cyan-300 mb-2">
                 Status <span className="text-red-500">*</span>
               </label>
               <select
@@ -182,7 +182,7 @@ export default function ContactForm({ contact, onClose, onSave }: ContactFormPro
             </div>
 
             <div>
-              <label htmlFor="tags" className="block text-sm font-bold text-gray-900 mb-2 uppercase tracking-wide">
+              <label htmlFor="tags" className="block text-sm font-medium text-cyan-300 mb-2">
                 Tags
               </label>
               <input
@@ -190,14 +190,14 @@ export default function ContactForm({ contact, onClose, onSave }: ContactFormPro
                 id="tags"
                 value={formData.tags}
                 onChange={(e) => setFormData({ ...formData, tags: e.target.value })}
-                className="w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all"
+                className="w-full px-4 py-3 bg-slate-900 border-2 border-cyan-500/40 rounded-xl text-cyan-100 focus:ring-2 focus:ring-cyan-500 focus:border-cyan-400 transition-all"
                 placeholder="VIP, Enterprise, etc. (comma separated)"
               />
             </div>
           </div>
 
           <div>
-            <label htmlFor="notes" className="block text-sm font-bold text-gray-900 mb-2 uppercase tracking-wide">
+            <label htmlFor="notes" className="block text-sm font-medium text-cyan-300 mb-2">
               Notes
             </label>
             <textarea
@@ -205,7 +205,7 @@ export default function ContactForm({ contact, onClose, onSave }: ContactFormPro
               value={formData.notes}
               onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
               rows={4}
-              className="w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all resize-none"
+              className="w-full px-4 py-3 bg-slate-900 border-2 border-cyan-500/40 rounded-xl text-cyan-100 focus:ring-2 focus:ring-cyan-500 focus:border-cyan-400 transition-all resize-none"
               placeholder="Any additional notes about this contact..."
             />
           </div>
@@ -221,7 +221,7 @@ export default function ContactForm({ contact, onClose, onSave }: ContactFormPro
             <button
               type="button"
               onClick={onClose}
-              className="px-8 py-3 border-2 border-gray-300 rounded-xl hover:bg-gray-50 transition-all font-medium"
+              className="px-8 py-3 bg-slate-700 text-cyan-100 rounded-xl font-medium hover:bg-slate-600 transition-all"
             >
               Cancel
             </button>
