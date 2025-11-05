@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Health Check</title>
+</head>
+<body>
+    <h1>Deployment Health Check</h1>
+    <p>If you can see this, the deployment is working.</p>
+    <p>If the main app shows a white screen, check console (F12) for errors.</p>
+    <script>
+        console.log('Health check page loaded successfully');
+        console.log('Environment variables check:');
+        console.log('- This is a static HTML page, so env vars are not accessible here');
+        console.log('- The main app requires VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY');
+        console.log('- These must be set in your Vercel project settings');
+    </script>
+</body>
+</html>

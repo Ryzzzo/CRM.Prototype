@@ -1,0 +1,50 @@
+============================================
+VERCEL ENVIRONMENT VARIABLES - COPY & PASTE
+============================================
+
+Go to: https://vercel.com/dashboard
+→ Select your project
+→ Settings
+→ Environment Variables
+
+Add these TWO variables:
+
+-------------------------------------------
+Variable 1:
+-------------------------------------------
+Name:
+VITE_SUPABASE_URL
+
+Value:
+https://xsunvprugcgisrsjmyfe.supabase.co
+
+Environment:
+☑ Production
+☑ Preview
+☑ Development
+
+-------------------------------------------
+Variable 2:
+-------------------------------------------
+Name:
+VITE_SUPABASE_ANON_KEY
+
+Value:
+eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhzdW52cHJ1Z2NnaXNyc2pteWZlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjE2MTI4MzYsImV4cCI6MjA3NzE4ODgzNn0.HWzE0yRADcQk9UTYn2BSC81-FEKuXNbL6FiFRHMZxRE
+
+Environment:
+☑ Production
+☑ Preview
+☑ Development
+
+-------------------------------------------
+
+After adding both variables:
+1. Click "Save"
+2. Go to "Deployments" tab
+3. Click ••• menu on latest deployment
+4. Click "Redeploy"
+
+Your app will then work correctly!
+
+============================================
